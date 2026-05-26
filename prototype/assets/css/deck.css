@@ -406,6 +406,11 @@ h1, h2, h3, h4 {
 }
 .cover-photo .photo-fill {
   position: absolute; inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 .photo-grain {
   position: absolute; inset: 0;
@@ -1727,21 +1732,35 @@ h1, h2, h3, h4 {
   overflow: hidden;
   display: flex;
   align-items: flex-end;
-  padding: 24px;
+  padding: 18px;
   min-height: 180px;
+  background: var(--forest-900);
+}
+.mb-tile img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 .mb-tile span {
+  position: relative;
+  z-index: 2;
   font-family: ui-monospace, Menlo, monospace;
-  font-size: 11px;
-  letter-spacing: 0.16em;
+  font-size: 10px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.4);
 }
 .mb-tile::after {
   content: "";
   position: absolute; inset: 0;
-  background-image:
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 14px);
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.45) 100%);
+  pointer-events: none;
 }
 
 /* ============================================================
@@ -1893,13 +1912,19 @@ h1, h2, h3, h4 {
 }
 .vs-photo-card {
   height: 72px;
-  background: linear-gradient(135deg,#EAD2B0,#7E4C21);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--forest-900);
 }
-.vs-photo-card:nth-child(2) { background: linear-gradient(135deg,#DCE5EF,#2D5A91); }
-.vs-photo-card:nth-child(3) { background: linear-gradient(135deg,#F7EDE1,#B8763E); }
-.vs-photo-card:nth-child(4) { background: linear-gradient(135deg,#2D5A91,#B8763E); }
-.vs-photo-card:nth-child(5) { background: linear-gradient(135deg,#B8763E,#2D5A91); }
-.vs-photo-card:nth-child(6) { background: linear-gradient(135deg,#DCE5EF,#7E4C21); }
+.vs-photo-card:nth-child(1) { background-image: url("../img/generated/heroPorch.webp"); }
+.vs-photo-card:nth-child(2) { background-image: url("../img/generated/holdingHands.webp"); }
+.vs-photo-card:nth-child(3) { background-image: url("../img/generated/consult.webp"); }
+.vs-photo-card:nth-child(4) { background-image: url("../img/generated/sweetDreams.webp"); }
+.vs-photo-card:nth-child(5) { background-image: url("../img/generated/groceryMeal.webp"); }
+.vs-photo-card:nth-child(6) { background-image: url("../img/generated/walkingGarden.webp"); }
 
 .vs-trust {
   display: grid;
