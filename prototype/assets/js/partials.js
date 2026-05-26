@@ -25,7 +25,7 @@
     <header class="site-header" role="banner">
       <div class="container header-inner">
         <a class="brand-logo" href="index.html" aria-label="J.A.P. Senior Care Services — Home">
-          <img src="assets/img/jap-logo.png" alt="J.A.P. Senior Care Services — Love, Dignity, Respect" />
+          <img src="assets/img/jap-logo.webp" alt="J.A.P. Senior Care Services — Love, Dignity, Respect" />
         </a>
         <nav class="nav" aria-label="Primary">
           ${NAV.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}
@@ -51,7 +51,7 @@
     <aside class="drawer" aria-hidden="true" aria-label="Site menu">
       <div class="drawer-head">
         <a class="brand-logo brand-logo--drawer" href="index.html">
-          <img src="assets/img/jap-logo.png" alt="J.A.P. Senior Care Services" />
+          <img src="assets/img/jap-logo.webp" alt="J.A.P. Senior Care Services" />
         </a>
         <button class="drawer-close" aria-label="Close menu"></button>
       </div>
@@ -73,7 +73,7 @@
         <div class="footer-top">
           <div class="brand">
             <a class="brand-logo brand-logo--dark" href="index.html" aria-label="J.A.P. Senior Care Services — Home">
-              <img src="assets/img/jap-logo.png" alt="J.A.P. Senior Care Services" />
+              <img src="assets/img/jap-logo.webp" alt="J.A.P. Senior Care Services" />
             </a>
             <p class="dedication">In honor of Ethel M. Sanders — the grandmother whose spirit of care started it all.</p>
           </div>
