@@ -1131,6 +1131,45 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   line-height: 1.5;
 }
 
+/* Floating Tweaks toggle button */
+#tweaks-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 79;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: var(--forest);
+  color: var(--ivory);
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(45, 90, 145, 0.32);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), background 200ms var(--ease);
+}
+#tweaks-toggle svg { width: 16px; height: 16px; }
+#tweaks-toggle:hover {
+  background: var(--forest-800);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(45, 90, 145, 0.4);
+}
+#tweaks-toggle:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 3px;
+}
+#tweaks-toggle.is-hidden { display: none; }
+
+@media (max-width: 700px) {
+  #tweaks-toggle { right: 16px; bottom: calc(64px + 16px); padding: 10px 14px; font-size: 11px; }
+}
+
 /* ---------- 19. PAGE HERO (internal pages) ---------- */
 .page-hero {
   position: relative;

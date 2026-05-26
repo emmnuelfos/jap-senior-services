@@ -11,17 +11,33 @@
 </head>
 <body>
 
-  <!-- Progress bar -->
-  <div class="progress-bar" aria-hidden="true"><span></span></div>
-
-  <!-- Side dots -->
-  <nav class="dots" aria-label="Slide navigation"></nav>
-
   <!-- Persistent chrome -->
   <a class="agency-mark" href="#slide-1" aria-label="TaskFlo VA — Home Care VA Solutions">
     <img class="agency-mark-img" src="assets/img/taskflova-logo.png" alt="TaskFlo VA" />
   </a>
-  <div class="slide-counter" aria-live="polite"><span class="curr">01</span> <span class="div">/</span> <span class="total">18</span></div>
+
+  <!-- Bottom-center nav pill (Arabland-style) -->
+  <nav class="deck-nav" aria-label="Slide navigation">
+    <button class="deck-nav-btn deck-nav-prev" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <div class="deck-nav-track" role="progressbar" aria-label="Slide progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="deck-nav-fill"></div>
+      <div class="deck-nav-marker" aria-hidden="true"></div>
+    </div>
+    <button class="deck-nav-btn deck-nav-next" aria-label="Next slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+    <div class="deck-nav-counter" aria-live="polite">
+      <span class="curr">01</span>
+      <span class="div">·</span>
+      <span class="total">18</span>
+    </div>
+  </nav>
 
   <!-- Slide index overlay (Esc to toggle) -->
   <div class="index-overlay" aria-hidden="true">

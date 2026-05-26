@@ -116,68 +116,9 @@ h1, h2, h3, h4 {
    GLOBAL CHROME
    ============================================================ */
 
-.progress-bar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: rgba(31, 30, 28, 0.06);
-  z-index: 60;
-}
-.progress-bar span {
-  display: block;
-  height: 100%;
-  width: 0%;
-  background: var(--brass);
-  transition: width 250ms var(--ease);
-}
-
-.dots {
-  position: fixed;
-  right: 24px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 50;
-}
-.dots button {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--stone-200);
-  padding: 0;
-  position: relative;
-  transition: background 200ms var(--ease), transform 200ms var(--ease);
-}
-.dots button::after {
-  content: attr(data-title);
-  position: absolute;
-  right: calc(100% + 16px);
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--forest);
-  background: var(--ivory);
-  border: 1px solid var(--stone-200);
-  padding: 4px 10px;
-  border-radius: 3px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms var(--ease);
-}
-.dots button:hover { background: var(--brass); transform: scale(1.2); }
-.dots button:hover::after { opacity: 1; }
-.dots button.is-active {
-  background: var(--forest);
-  transform: scale(1.4);
-}
-
 .agency-mark {
   position: fixed;
-  bottom: 20px; left: 24px;
+  bottom: 24px; left: 28px;
   display: inline-flex;
   align-items: center;
   z-index: 50;
@@ -191,26 +132,98 @@ h1, h2, h3, h4 {
   display: block;
 }
 
-.slide-counter {
+/* ---------- BOTTOM-CENTER NAV PILL (Arabland pattern) ---------- */
+.deck-nav {
   position: fixed;
-  bottom: 20px; right: 24px;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 50;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 18px;
+  padding: 10px 18px;
+  background: rgba(245, 241, 234, 0.86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(138, 135, 130, 0.22);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(31, 30, 28, 0.04);
   font-family: var(--font-body);
+}
+
+.deck-nav-btn {
+  width: 28px; height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--charcoal);
+  cursor: pointer;
+  transition: background 200ms var(--ease), color 200ms var(--ease);
+}
+.deck-nav-btn svg { width: 18px; height: 18px; }
+.deck-nav-btn:hover { background: rgba(138, 135, 130, 0.16); color: var(--forest); }
+.deck-nav-btn:disabled { opacity: 0.32; cursor: not-allowed; }
+.deck-nav-btn:disabled:hover { background: transparent; color: var(--charcoal); }
+.deck-nav-btn:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+.deck-nav-track {
+  position: relative;
+  width: clamp(160px, 22vw, 280px);
+  height: 2px;
+  background: rgba(138, 135, 130, 0.28);
+  border-radius: 2px;
+  overflow: visible;
+}
+.deck-nav-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  background: var(--forest);
+  border-radius: 2px;
+  transition: width 320ms var(--ease);
+}
+.deck-nav-marker {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--forest);
+  transform: translate(-50%, -50%);
+  transition: left 320ms var(--ease);
+}
+
+.deck-nav-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.18em;
   color: var(--stone);
   font-variant-numeric: tabular-nums;
+  min-width: 56px;
+  justify-content: flex-end;
 }
-.slide-counter .curr { color: var(--forest); }
-.slide-counter .div { color: var(--stone-200); }
-.slide-counter .total { color: var(--stone); }
+.deck-nav-counter .curr { color: var(--forest); }
+.deck-nav-counter .div { color: var(--stone-200); }
+.deck-nav-counter .total { color: var(--stone); }
 
-/* When the slide is dark, flip chrome colors */
-.slide.is-dark ~ .agency-mark { /* not used — fixed chrome handles globally */ }
+@media (max-width: 600px) {
+  .deck-nav { gap: 12px; padding: 8px 14px; }
+  .deck-nav-track { width: 120px; }
+  .deck-nav-counter { min-width: 48px; font-size: 10px; }
+  .agency-mark-img { height: 22px; }
+}
 
 /* ---------- INDEX OVERLAY ---------- */
 .index-overlay {

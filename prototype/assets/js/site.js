@@ -230,12 +230,40 @@
 
   const panel = buildPanel();
 
-  // Edit-mode protocol
+  // Floating toggle button — shown when panel is closed, hidden when open.
+  // Lets the panel be opened directly when viewing the live site (no iframe).
+  const toggle = document.createElement('button');
+  toggle.id = 'tweaks-toggle';
+  toggle.setAttribute('aria-label', 'Open design tweaks panel');
+  toggle.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 7h7"></path><path d="M4 12h10"></path><path d="M4 17h7"></path>
+      <circle cx="15" cy="7" r="2"></circle><circle cx="18" cy="12" r="2"></circle><circle cx="15" cy="17" r="2"></circle>
+    </svg>
+    <span>Tweaks</span>
+  `;
+  toggle.addEventListener('click', () => {
+    panel.classList.add('is-open');
+    toggle.classList.add('is-hidden');
+  });
+  document.body.appendChild(toggle);
+
+  // When panel closes (via X or postMessage), show toggle again
+  function onPanelClosed() { toggle.classList.remove('is-hidden'); }
+  panel.querySelector('.close').addEventListener('click', onPanelClosed);
+
+  // Edit-mode protocol (preserved for Claude Design iframe hosting)
   window.addEventListener('message', (e) => {
     const data = e && e.data;
     if (!data || !data.type) return;
-    if (data.type === '__activate_edit_mode') panel.classList.add('is-open');
-    if (data.type === '__deactivate_edit_mode') panel.classList.remove('is-open');
+    if (data.type === '__activate_edit_mode') {
+      panel.classList.add('is-open');
+      toggle.classList.add('is-hidden');
+    }
+    if (data.type === '__deactivate_edit_mode') {
+      panel.classList.remove('is-open');
+      toggle.classList.remove('is-hidden');
+    }
   });
   try {
     window.parent.postMessage({ type: '__edit_mode_available' }, '*');

@@ -8,25 +8,30 @@
   const slides = Array.from(document.querySelectorAll('.slide'));
   const total = slides.length;
 
-  const progressBar = document.querySelector('.progress-bar span');
-  const counterCurr = document.querySelector('.slide-counter .curr');
-  const counterTotal = document.querySelector('.slide-counter .total');
-  const dotsNav = document.querySelector('.dots');
+  const counterCurr = document.querySelector('.deck-nav-counter .curr');
+  const counterTotal = document.querySelector('.deck-nav-counter .total');
+  const prevBtn = document.querySelector('.deck-nav-prev');
+  const nextBtn = document.querySelector('.deck-nav-next');
+  const navTrack = document.querySelector('.deck-nav-track');
+  const navFill = document.querySelector('.deck-nav-fill');
+  const navMarker = document.querySelector('.deck-nav-marker');
   const indexOverlay = document.querySelector('.index-overlay');
   const indexGrid = document.querySelector('.index-grid');
   const indexClose = document.querySelector('.index-close');
 
   if (counterTotal) counterTotal.textContent = String(total).padStart(2, '0');
 
-  /* ---------- Build dots ---------- */
-  slides.forEach((s, i) => {
-    const btn = document.createElement('button');
-    btn.setAttribute('aria-label', 'Go to slide ' + (i + 1));
-    btn.setAttribute('data-title', String(i + 1).padStart(2, '0') + ' · ' + (s.dataset.title || ''));
-    btn.dataset.slide = String(i);
-    btn.addEventListener('click', () => goTo(i));
-    dotsNav.appendChild(btn);
-  });
+  /* ---------- Click on progress track to jump to that point ---------- */
+  if (navTrack) {
+    navTrack.addEventListener('click', (e) => {
+      const rect = navTrack.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const idx = Math.round(ratio * (total - 1));
+      goTo(idx);
+    });
+  }
+  if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
 
   /* ---------- Build index ---------- */
   slides.forEach((s, i) => {
@@ -50,10 +55,11 @@
     current = idx;
     if (counterCurr) counterCurr.textContent = String(idx + 1).padStart(2, '0');
     const pct = total <= 1 ? 100 : (idx / (total - 1)) * 100;
-    if (progressBar) progressBar.style.width = pct + '%';
-    dotsNav.querySelectorAll('button').forEach((b, i) => {
-      b.classList.toggle('is-active', i === idx);
-    });
+    if (navFill) navFill.style.width = pct + '%';
+    if (navMarker) navMarker.style.left = pct + '%';
+    if (navTrack) navTrack.setAttribute('aria-valuenow', String(Math.round(pct)));
+    if (prevBtn) prevBtn.disabled = (idx <= 0);
+    if (nextBtn) nextBtn.disabled = (idx >= total - 1);
   }
 
   /* ---------- IntersectionObserver to detect current ---------- */
