@@ -5,11 +5,14 @@
 
 /* ---------- 1. TOKENS ---------- */
 :root {
-  --forest:        #1F3A2E;
-  --forest-50:     #E8EFEB;
-  --forest-100:    #C8D5CD;
-  --forest-800:    #152822;
-  --forest-900:    #0E1C17;
+  /* Primary brand color is J.A.P. Navy (#2D5A91) — sourced from the client's
+     existing brand. Variable names below remain --forest/--sage to avoid a
+     mass rename, but the values are navy + pale sky blue. */
+  --forest:        #2D5A91;    /* JAP Navy (primary dark) */
+  --forest-50:     #E6EDF5;    /* navy 50  — very pale tint */
+  --forest-100:    #B8CBE2;    /* navy 100 — soft tint */
+  --forest-800:    #1F4275;    /* navy 800 — darker */
+  --forest-900:    #15315A;    /* navy 900 — deepest */
   --brass:         #B8763E;
   --brass-50:      #F7EDE1;
   --brass-100:     #EAD2B0;
@@ -22,8 +25,8 @@
   --stone-300:     #B8B5B0;
   --charcoal:      #1F1E1C;
   --charcoal-800:  #2E2D2A;
-  --sage:          #D7DDD2;
-  --sage-100:      #E7EBE3;
+  --sage:          #DCE5EF;    /* Pale Sky — secondary section surface */
+  --sage-100:      #EDF1F7;    /* Pale Sky 100 — softer variant */
   --white:         #FFFFFF;
 
   --font-display: "Fraunces", "Cormorant Garamond", Georgia, "Times New Roman", serif;
@@ -1148,7 +1151,7 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 .page-hero .bg.overlay::after {
   content: "";
   position: absolute; inset: 0;
-  background: linear-gradient(90deg, rgba(31,58,46,0.85) 0%, rgba(31,58,46,0.55) 55%, rgba(31,58,46,0.3) 100%);
+  background: linear-gradient(90deg, rgba(45,90,145,0.85) 0%, rgba(45,90,145,0.55) 55%, rgba(45,90,145,0.3) 100%);
 }
 .page-hero .content {
   position: relative;
@@ -1412,7 +1415,7 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 .home-hero[data-variant="full-bleed"] .bg::after {
   content: "";
   position: absolute; inset: 0;
-  background: linear-gradient(95deg, rgba(31,58,46,0.92) 0%, rgba(31,58,46,0.65) 45%, rgba(31,58,46,0.15) 100%);
+  background: linear-gradient(95deg, rgba(45,90,145,0.92) 0%, rgba(45,90,145,0.65) 45%, rgba(45,90,145,0.15) 100%);
 }
 .home-hero[data-variant="full-bleed"] .content { color: var(--ivory); padding-block: clamp(96px, 14vw, 180px); max-width: 680px; }
 .home-hero[data-variant="full-bleed"] h1 { color: var(--ivory); }
@@ -1449,7 +1452,7 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ivory);
-  background: rgba(31,58,46,0.55);
+  background: rgba(45,90,145,0.55);
   padding: 6px 12px;
   backdrop-filter: blur(8px);
   border-radius: 2px;

@@ -4,9 +4,11 @@
    ============================================================ */
 
 :root {
-  --forest:        #1F3A2E;
-  --forest-800:    #152822;
-  --forest-900:    #0E1C17;
+  /* Primary brand color is J.A.P. Navy (#2D5A91) — from the client's
+     existing brand. Variable names retained for minimal churn. */
+  --forest:        #2D5A91;    /* JAP Navy */
+  --forest-800:    #1F4275;
+  --forest-900:    #15315A;
   --brass:         #B8763E;
   --brass-100:     #EAD2B0;
   --brass-50:      #F7EDE1;
@@ -17,8 +19,8 @@
   --stone-200:     #C9C6C1;
   --charcoal:      #1F1E1C;
   --charcoal-800:  #2E2D2A;
-  --sage:          #D7DDD2;
-  --sage-100:      #E7EBE3;
+  --sage:          #DCE5EF;    /* Pale Sky */
+  --sage-100:      #EDF1F7;
 
   --font-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
   --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -214,7 +216,7 @@ h1, h2, h3, h4 {
 .index-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(31,58,46,0.96);
+  background: rgba(45,90,145,0.96);
   backdrop-filter: blur(10px);
   color: var(--ivory);
   z-index: 80;
@@ -973,7 +975,7 @@ h1, h2, h3, h4 {
 .pm-section.forest { background: var(--forest); color: var(--ivory); }
 .pm-hero {
   min-height: 120px;
-  background: linear-gradient(95deg, #1F3A2E 0%, rgba(31,58,46,0.6) 60%, #B8763E 100%);
+  background: linear-gradient(95deg, #2D5A91 0%, rgba(45,90,145,0.6) 60%, #B8763E 100%);
   color: var(--ivory);
 }
 .pm-eyebrow {
@@ -1350,7 +1352,7 @@ h1, h2, h3, h4 {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  background: linear-gradient(180deg,#1F3A2E 0%,#7E4C21 100%);
+  background: linear-gradient(180deg,#2D5A91 0%,#7E4C21 100%);
   color: var(--ivory);
   flex: 1;
   min-height: 0;
@@ -1682,7 +1684,7 @@ h1, h2, h3, h4 {
 .m-vis-photo .ph-img {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg,#B8763E,#1F3A2E);
+  background: linear-gradient(135deg,#B8763E,#2D5A91);
   border-radius: 2px;
   animation: photoDemo 2400ms ease-out infinite;
 }
@@ -1815,7 +1817,7 @@ h1, h2, h3, h4 {
   min-height: 130px;
 }
 .vs-hero.ours {
-  background: linear-gradient(95deg, rgba(31,58,46,0.85) 0%, rgba(184,118,62,0.4) 100%);
+  background: linear-gradient(95deg, rgba(45,90,145,0.85) 0%, rgba(184,118,62,0.4) 100%);
   color: white;
   min-height: 130px;
 }
@@ -1880,11 +1882,11 @@ h1, h2, h3, h4 {
   height: 72px;
   background: linear-gradient(135deg,#EAD2B0,#7E4C21);
 }
-.vs-photo-card:nth-child(2) { background: linear-gradient(135deg,#D7DDD2,#1F3A2E); }
+.vs-photo-card:nth-child(2) { background: linear-gradient(135deg,#DCE5EF,#2D5A91); }
 .vs-photo-card:nth-child(3) { background: linear-gradient(135deg,#F7EDE1,#B8763E); }
-.vs-photo-card:nth-child(4) { background: linear-gradient(135deg,#1F3A2E,#B8763E); }
-.vs-photo-card:nth-child(5) { background: linear-gradient(135deg,#B8763E,#1F3A2E); }
-.vs-photo-card:nth-child(6) { background: linear-gradient(135deg,#D7DDD2,#7E4C21); }
+.vs-photo-card:nth-child(4) { background: linear-gradient(135deg,#2D5A91,#B8763E); }
+.vs-photo-card:nth-child(5) { background: linear-gradient(135deg,#B8763E,#2D5A91); }
+.vs-photo-card:nth-child(6) { background: linear-gradient(135deg,#DCE5EF,#7E4C21); }
 
 .vs-trust {
   display: grid;
