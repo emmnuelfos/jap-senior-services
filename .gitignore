@@ -1,0 +1,14 @@
+# OS / Editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Claude harness
+.claude/launch.json
+
+# Logs / temp
+*.log
+*.tmp
