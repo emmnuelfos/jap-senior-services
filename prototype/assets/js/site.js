@@ -9,9 +9,13 @@
   /* ---------- HEADER SHRINK ON SCROLL ---------- */
   const header = document.querySelector('.site-header');
   if (header) {
+    // Hysteresis around the toggle — prevents bouncing when scroll lands
+    // right on the threshold (especially at scrollY = 0 with bounce-scroll).
+    let scrolled = false;
     const onScroll = () => {
-      if (window.scrollY > 24) header.classList.add('is-scrolled');
-      else header.classList.remove('is-scrolled');
+      const y = window.scrollY;
+      if (!scrolled && y > 32) { scrolled = true; header.classList.add('is-scrolled'); }
+      else if (scrolled && y < 8) { scrolled = false; header.classList.remove('is-scrolled'); }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
