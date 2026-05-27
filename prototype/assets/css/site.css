@@ -884,6 +884,62 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   flex-wrap: wrap;
 }
 
+/* ---------- CTA BAND — split variant (photo on the right) ---------- */
+.cta-band--split {
+  padding: 0;
+  text-align: left;
+}
+.cta-band--split .cta-band-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: stretch;
+  min-height: 360px;
+}
+.cta-band--split .cta-band-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(48px, 6vw, 96px) clamp(40px, 5vw, 80px);
+  max-width: none;
+}
+.cta-band--split .cta-band-copy .btns {
+  justify-content: flex-start;
+}
+.cta-band--split .cta-band-copy .sub { margin-bottom: 28px; }
+.cta-band--split .cta-band-photo {
+  position: relative;
+  overflow: hidden;
+}
+.cta-band--split .cta-band-photo img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  -webkit-mask-image: linear-gradient(to right,
+    rgba(0,0,0,0)    0%,
+    rgba(0,0,0,0.15) 6%,
+    rgba(0,0,0,0.45) 14%,
+    rgba(0,0,0,0.75) 22%,
+    rgba(0,0,0,0.95) 30%,
+    #000             36%,
+    #000             100%);
+          mask-image: linear-gradient(to right,
+    rgba(0,0,0,0)    0%,
+    rgba(0,0,0,0.15) 6%,
+    rgba(0,0,0,0.45) 14%,
+    rgba(0,0,0,0.75) 22%,
+    rgba(0,0,0,0.95) 30%,
+    #000             36%,
+    #000             100%);
+}
+@media (max-width: 900px) {
+  .cta-band--split .cta-band-grid { grid-template-columns: 1fr; }
+  .cta-band--split .cta-band-photo { min-height: 280px; }
+  .cta-band--split .cta-band-photo img {
+    -webkit-mask-image: linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 8%, #000 24%);
+            mask-image: linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 8%, #000 24%);
+  }
+}
+
 /* ---------- 12. ANIMATED REVEAL ---------- */
 /* Default: visible. JS adds `.reveal-pending` to hide before fading up.
    This means: no JS = always visible (graceful), and screenshot tools
