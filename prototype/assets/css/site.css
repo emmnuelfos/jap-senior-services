@@ -113,6 +113,10 @@ h1, h2, h3, h4, h5 {
 
 .section { padding-block: var(--section-y); }
 .section-tight { padding-block: clamp(48px, 6vw, 80px); }
+
+/* The value strip sits tight below the hero so both fit in one viewport fold */
+.value-strip-section { padding-block: 0; }
+.value-strip-section .container--wide { max-width: 1600px; padding-inline: clamp(20px, 3vw, 48px); }
 .bg-ivory { background: var(--ivory); }
 .bg-ivory-100 { background: var(--ivory-100); }
 .bg-sage { background: var(--sage-100); }
@@ -348,28 +352,28 @@ a.link-arrow.on-dark { color: var(--brass-100); }
   line-height: 0;
 }
 .brand-logo img {
-  height: 64px;
+  height: 84px;
   width: auto;
   display: block;
   transition: height 200ms var(--ease);
 }
-.is-scrolled .brand-logo img { height: 52px; }
+.is-scrolled .brand-logo img { height: 64px; }
 
-.brand-logo--drawer img { height: 56px; }
+.brand-logo--drawer img { height: 64px; }
 
 /* Monochrome ivory variant for dark sections (Forest footer / dark heroes) */
 .brand-logo--dark img {
   filter: brightness(0) invert(1) opacity(0.92);
-  height: 80px;
+  height: 96px;
 }
 
 /* Footer brand stack */
 .site-footer .brand .brand-logo { margin-bottom: 18px; }
 
 @media (max-width: 700px) {
-  .brand-logo img { height: 52px; }
-  .is-scrolled .brand-logo img { height: 44px; }
-  .brand-logo--dark img { height: 64px; }
+  .brand-logo img { height: 58px; }
+  .is-scrolled .brand-logo img { height: 50px; }
+  .brand-logo--dark img { height: 72px; }
 }
 
 .nav {
@@ -448,14 +452,17 @@ a.link-arrow.on-dark { color: var(--brass-100); }
 .phone-cta {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--charcoal);
-  padding: 4px 4px;
+  padding: 4px 16px 4px 4px;
+  margin-right: 4px;
+  border-right: 1px solid var(--stone-200);
   transition: opacity 200ms var(--ease);
+  white-space: nowrap;
 }
 .phone-cta:hover { opacity: 0.75; }
 .phone-cta-icon {
-  width: 36px; height: 36px;
+  width: 38px; height: 38px;
   border-radius: 50%;
   background: var(--ivory-100);
   border: 1px solid var(--stone-200);
@@ -466,7 +473,12 @@ a.link-arrow.on-dark { color: var(--brass-100); }
   flex-shrink: 0;
 }
 .phone-cta-icon svg { width: 14px; height: 14px; }
-.phone-cta-text { display: flex; flex-direction: column; line-height: 1.15; }
+.phone-cta-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  white-space: nowrap;
+}
 .phone-cta-text small {
   font-family: var(--font-body);
   font-size: 10px;
@@ -475,6 +487,7 @@ a.link-arrow.on-dark { color: var(--brass-100); }
   text-transform: uppercase;
   color: var(--brass);
   margin-bottom: 4px;
+  white-space: nowrap;
 }
 .phone-cta-text b {
   font-family: var(--font-body);
@@ -483,7 +496,12 @@ a.link-arrow.on-dark { color: var(--brass-100); }
   letter-spacing: 0.01em;
   color: var(--forest);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
+
+/* Header inner: don't squeeze the CTA */
+.header-inner { gap: 28px; }
+.header-cta { gap: 12px; flex-wrap: nowrap; }
 
 /* ---------- BUTTON ARROW HELPER ---------- */
 .btn-arrow {
@@ -1549,21 +1567,28 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   align-items: stretch;
-  min-height: 85vh;
+  min-height: 0;
 }
 .home-hero[data-variant="editorial-split"] .left {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(56px, 8vw, 96px) clamp(32px, 5vw, 80px) clamp(56px, 8vw, 96px) var(--gutter);
+  padding: clamp(28px, 4vw, 56px) clamp(28px, 4vw, 56px) clamp(28px, 4vw, 56px) var(--gutter);
 }
-.home-hero[data-variant="editorial-split"] .left h1 { color: var(--forest); max-width: 14ch; }
+.home-hero[data-variant="editorial-split"] .left h1 {
+  color: var(--forest);
+  max-width: 14ch;
+  font-size: clamp(36px, 4.8vw, 64px);
+}
 .home-hero[data-variant="editorial-split"] .right {
   position: relative;
-  background: var(--sage);
+  background: var(--ivory);
 }
 .home-hero[data-variant="editorial-split"] .right img {
-  width: 100%; height: 100%; object-fit: cover; min-height: 480px;
+  width: 100%; height: 100%; object-fit: cover; min-height: 420px;
+  /* Soft gradient blend on the left edge so the photo melts into Ivory */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 4%, #000 16%, #000 100%);
+          mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 4%, #000 16%, #000 100%);
 }
 .home-hero[data-variant="editorial-split"] .right .caption {
   position: absolute;
@@ -1580,19 +1605,20 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 
 /* ---------- HERO TRUST ROW (avatars + stars + caption) ---------- */
 .trust-row {
-  margin-top: 32px;
+  margin-top: 28px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 .trust-avatars { display: inline-flex; }
 .ta-avatar {
-  width: 36px; height: 36px;
+  width: 52px; height: 52px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--ivory);
-  margin-left: -10px;
+  border: 3px solid var(--ivory);
+  box-shadow: 0 2px 6px rgba(45, 90, 145, 0.10);
+  margin-left: -14px;
   background: var(--stone-200);
 }
 .ta-avatar:first-child { margin-left: 0; }
@@ -1614,7 +1640,10 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 
 /* ---------- HERO FLOATING QUOTE CARD ---------- */
 .home-hero[data-variant="editorial-split"] .right .hero-photo {
-  width: 100%; height: 100%; object-fit: cover; min-height: 540px;
+  width: 100%; height: 100%; object-fit: cover; min-height: 440px;
+  /* Same gradient blend as the generic .right img rule above */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 4%, #000 16%, #000 100%);
+          mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 4%, #000 16%, #000 100%);
 }
 .hero-quote-card {
   position: absolute;
