@@ -444,6 +444,56 @@ a.link-arrow.on-dark { color: var(--brass-100); }
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- PHONE CTA (text-style, no pill background) ---------- */
+.phone-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--charcoal);
+  padding: 4px 4px;
+  transition: opacity 200ms var(--ease);
+}
+.phone-cta:hover { opacity: 0.75; }
+.phone-cta-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--ivory-100);
+  border: 1px solid var(--stone-200);
+  color: var(--brass);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.phone-cta-icon svg { width: 14px; height: 14px; }
+.phone-cta-text { display: flex; flex-direction: column; line-height: 1.15; }
+.phone-cta-text small {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass);
+  margin-bottom: 4px;
+}
+.phone-cta-text b {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  color: var(--forest);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- BUTTON ARROW HELPER ---------- */
+.btn-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-arrow svg { transition: transform 200ms var(--ease); }
+.btn-arrow:hover svg { transform: translateX(3px); }
+
 .header-burger {
   display: none;
   width: 48px; height: 48px;
@@ -1526,6 +1576,129 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   padding: 6px 12px;
   backdrop-filter: blur(8px);
   border-radius: 2px;
+}
+
+/* ---------- HERO TRUST ROW (avatars + stars + caption) ---------- */
+.trust-row {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.trust-avatars { display: inline-flex; }
+.ta-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--ivory);
+  margin-left: -10px;
+  background: var(--stone-200);
+}
+.ta-avatar:first-child { margin-left: 0; }
+.trust-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.trust-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.trust-text {
+  font-size: 13px;
+  color: var(--stone);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- HERO FLOATING QUOTE CARD ---------- */
+.home-hero[data-variant="editorial-split"] .right .hero-photo {
+  width: 100%; height: 100%; object-fit: cover; min-height: 540px;
+}
+.hero-quote-card {
+  position: absolute;
+  left: clamp(20px, 4vw, 56px);
+  bottom: clamp(40px, 6vw, 72px);
+  max-width: 280px;
+  background: var(--ivory-100);
+  border: 1px solid var(--stone-200);
+  border-radius: 6px;
+  padding: 24px 24px 20px;
+  box-shadow: 0 18px 40px rgba(45, 90, 145, 0.18);
+  z-index: 2;
+}
+.hqc-mark {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 0.7;
+  color: var(--brass);
+  margin-bottom: 4px;
+}
+.hero-quote-card p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.35;
+  color: var(--forest);
+  margin: 0 0 14px;
+}
+.hqc-attrib {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+/* ---------- VALUE STRIP (4 prop cards under hero) ---------- */
+.value-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-block: var(--hairline);
+}
+.value-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 36px clamp(24px, 2.8vw, 40px);
+  border-right: var(--hairline);
+}
+.value-cell:last-child { border-right: 0; }
+.value-cell .ai-icon { margin-bottom: 2px; }
+.value-cell .vc-body { width: 100%; }
+.value-cell .vc-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--forest);
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+.value-cell .vc-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--charcoal-800);
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .value-strip { grid-template-columns: 1fr 1fr; }
+  .value-cell:nth-child(2) { border-right: 0; }
+  .value-cell:nth-child(-n+2) { border-bottom: var(--hairline); }
+}
+@media (max-width: 520px) {
+  .value-strip { grid-template-columns: 1fr; }
+  .value-cell { border-right: 0; border-bottom: var(--hairline); }
+  .value-cell:last-child { border-bottom: 0; }
+}
+
+@media (max-width: 720px) {
+  .hero-quote-card { max-width: 220px; padding: 18px; }
+  .hero-quote-card p { font-size: 15px; }
 }
 @media (max-width: 900px) {
   .home-hero[data-variant="editorial-split"] .split { grid-template-columns: 1fr; min-height: auto; }

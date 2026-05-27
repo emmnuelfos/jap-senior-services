@@ -11,12 +11,13 @@
   const PHONE_HREF = 'tel:+12052536537';
 
   const NAV = [
-    { href: 'about.html',        label: 'About' },
-    { href: 'services.html',     label: 'Services' },
-    { href: 'how-it-works.html', label: 'How It Works' },
-    { href: 'stories.html',      label: 'Stories' },
-    { href: 'careers.html',      label: 'Careers' },
-    { href: 'contact.html',      label: 'Contact' },
+    { href: 'about.html',                 label: 'About' },
+    { href: 'services.html',              label: 'Services' },
+    { href: 'how-it-works.html',          label: 'How It Works' },
+    { href: 'index.html#why-us',          label: 'Why Us' },
+    { href: 'stories.html',               label: 'Stories' },
+    { href: 'careers.html',               label: 'Careers' },
+    { href: 'contact.html',               label: 'Contact' },
   ];
 
   /* ---------- HEADER ---------- */
@@ -31,18 +32,21 @@
           ${NAV.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}
         </nav>
         <div class="header-cta">
-          <a class="phone-pill" href="${PHONE_HREF}" data-gtm-event="phone_header" aria-label="Call us at ${PHONE}">
-            <span class="icon" aria-hidden="true">
+          <a class="phone-cta" href="${PHONE_HREF}" data-gtm-event="phone_header" aria-label="Call us at ${PHONE}">
+            <span class="phone-cta-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/>
               </svg>
             </span>
-            <span class="text">
-              <small>Call us</small>
+            <span class="phone-cta-text">
+              <small>Call Us Anytime</small>
               <b>${PHONE}</b>
             </span>
           </a>
-          <a class="btn btn-primary" href="contact.html#consult" data-gtm-event="cta_header_consult">Request a Consultation</a>
+          <a class="btn btn-primary btn-arrow" href="contact.html#consult" data-gtm-event="cta_header_consult">
+            Request a Consultation
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
           <button class="header-burger" aria-label="Open menu"><span aria-hidden="true"></span></button>
         </div>
       </div>

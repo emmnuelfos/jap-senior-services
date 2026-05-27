@@ -139,7 +139,7 @@
   /* ---------- TWEAKS PANEL ---------- */
   // Persist via localStorage
   const TWEAK_KEY = 'jap.tweaks.v1';
-  const defaults = { heroVariant: 'full-bleed', cardLayout: 'photo-top' };
+  const defaults = { heroVariant: 'editorial-split', cardLayout: 'photo-top' };
   let tweaks = defaults;
   try {
     const stored = localStorage.getItem(TWEAK_KEY);
