@@ -2672,13 +2672,19 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
 /* ---------- 24. SPLIT STORY ---------- */
 .split-story {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  /* Copy gets the wider column; the portrait-orientation photo (3:4)
+     sits narrower beside it, matching the about-page dedication card
+     layout. */
+  grid-template-columns: 0.8fr 1.4fr;
   gap: clamp(40px, 5vw, 80px);
   align-items: center;
 }
 .split-story.flip { grid-template-columns: 1fr 1.2fr; }
 .split-story .photo {
-  aspect-ratio: 4 / 3;
+  /* Portrait 3:4 — matches the about-page dedication portrait size
+     so the same storyPreview image renders identically in both
+     places. */
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   border-radius: var(--radius);
   background: var(--sage);
