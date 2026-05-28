@@ -292,20 +292,12 @@
         el.style.setProperty('--seq-offset', '0ms');
         return;
       }
-      const type     = el.dataset.reveal;
-      const prevType = prev.dataset.reveal;
       const prevOffset = parseFloat(prev.style.getPropertyValue('--seq-offset')) || 0;
 
-      // Two consecutive paragraphs share the same offset (parallel, no
-      // extra step). The per-word stagger inside each one is enough.
-      if (type === 'words' && prevType === 'words') {
-        el.style.setProperty('--seq-offset', prevOffset + 'ms');
-        return;
-      }
-
-      // Otherwise: this element starts SEQ_STEP after the previous one
-      // STARTED — not after it finished. Cascade overlaps so the order
-      // reads top-to-bottom without dragging.
+      // Every reveal — including consecutive paragraphs — starts SEQ_STEP
+      // after the previous one STARTED. Top-to-bottom cascade in DOM
+      // order. No element waits for the previous one to fully finish;
+      // they just step in 150 ms apart.
       el.style.setProperty('--seq-offset', (prevOffset + SEQ_STEP) + 'ms');
     });
   }
