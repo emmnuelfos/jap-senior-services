@@ -231,11 +231,16 @@
   // animation duration). The matching CSS rules add that offset on top
   // of any per-letter / per-word stagger.
   //
-  // Fixed step between consecutive reveal elements. We do NOT wait for
-  // one element's full duration to complete before starting the next —
-  // each element fires SEQ_STEP after the previous one starts, so the
-  // cascade overlaps and finishes quickly. Premium feel without dragging.
-  const SEQ_STEP = 150;
+  // Fixed step between consecutive reveal elements.
+  //   SEQ_STEP    — generic cadence between eyebrows / titles / buttons.
+  //                 Tight 150 ms beat keeps the cascade snappy.
+  //   PARA_STEP   — bigger gap when one paragraph follows another, so
+  //                 it visibly reads as "first paragraph plays, then
+  //                 the next". 150 ms was too subtle; 700 ms gives
+  //                 each paragraph room to register before the next
+  //                 kicks in, without dragging to the full ~3 s wait.
+  const SEQ_STEP  = 150;
+  const PARA_STEP = 700;
 
   // Grid containers: chain each child cell's reveal start time so cell 2
   // begins where cell 1's internal animation finished, cell 3 after cell 2,
@@ -292,13 +297,15 @@
         el.style.setProperty('--seq-offset', '0ms');
         return;
       }
+      const type     = el.dataset.reveal;
+      const prevType = prev.dataset.reveal;
       const prevOffset = parseFloat(prev.style.getPropertyValue('--seq-offset')) || 0;
 
-      // Every reveal — including consecutive paragraphs — starts SEQ_STEP
-      // after the previous one STARTED. Top-to-bottom cascade in DOM
-      // order. No element waits for the previous one to fully finish;
-      // they just step in 150 ms apart.
-      el.style.setProperty('--seq-offset', (prevOffset + SEQ_STEP) + 'ms');
+      // Paragraph after paragraph gets the larger PARA_STEP so the
+      // hierarchy reads top-to-bottom. Everything else uses the
+      // tight SEQ_STEP.
+      const step = (type === 'words' && prevType === 'words') ? PARA_STEP : SEQ_STEP;
+      el.style.setProperty('--seq-offset', (prevOffset + step) + 'ms');
     });
   }
 
