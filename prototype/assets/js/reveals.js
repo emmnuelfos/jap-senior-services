@@ -299,6 +299,11 @@
     '.cta-band-grid'        // CTA band (copy + photo)
   ];
 
+  // Tight stagger between consecutive image reveals — independent of
+  // the main text cascade so a row of card photos doesn't have to wait
+  // for every preceding cell's title + paragraph to finish first.
+  const IMG_STEP = 100;
+
   function sequenceGrids() {
     GRID_SELECTORS.forEach(selector => {
       document.querySelectorAll(selector).forEach(grid => {
@@ -330,6 +335,18 @@
             el.style.setProperty('--seq-offset', runningOffset + 'ms');
             lastType = type;
           });
+        });
+
+        // Image cascade — images inside this grid get their own tight
+        // 100 ms stagger, regardless of how the per-cell text cascade
+        // landed. Without this, the second column of card photos would
+        // sit behind ~600 ms of text reveals from card 1 before its
+        // image even started fading in. Walking in DOM order so the
+        // visual order matches the source order. Applied AFTER the
+        // text cascade so this overwrite always wins for images.
+        const imgs = grid.querySelectorAll('img[data-reveal="image"]');
+        imgs.forEach((img, i) => {
+          img.style.setProperty('--seq-offset', (i * IMG_STEP) + 'ms');
         });
       });
     });
