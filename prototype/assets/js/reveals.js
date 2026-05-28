@@ -222,16 +222,43 @@
   //    The testimonials gallery handles its own scatter replay in
   //    testimonials.js, so this strict one-shot behaviour is what
   //    the rest of the site uses.
+  //
+  //    Special-case for data-reveal="image": Chromium's IntersectionObserver
+  //    computes ratio against the rendered (clipped) rect, not the layout
+  //    box, so an img that starts at clip-path: inset(0 100% 0 0) has zero
+  //    visible area and the observer never fires for it — a deadlock.
+  //    We observe the img's parent wrapper instead and add `is-revealed`
+  //    to the img when the wrapper crosses the threshold. The img's own
+  //    layout box is irrelevant for triggering; only the wrapper's matters.
   // ----------------------------------------------------------------
+  // Map from observed element → element that should receive is-revealed.
+  // Most of the time these are the same element; for image reveals the
+  // observed element is the parent wrapper but the reveal target is the
+  // img child.
+  const revealTargets = new WeakMap();
+
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      const el = e.target;
+      const observed = e.target;
       if (e.isIntersecting && e.intersectionRatio > IO_ENTER) {
-        el.classList.add('is-revealed');
-        io.unobserve(el);
+        const target = revealTargets.get(observed) || observed;
+        target.classList.add('is-revealed');
+        io.unobserve(observed);
       }
     });
   }, { threshold: [0, IO_ENTER, 0.5] });
+
+  // Observe an element with the appropriate strategy. For image reveals
+  // we step up to the parent so clip-path on the img doesn't blind the
+  // observer. For every other type we observe the element directly.
+  function observeReveal(el) {
+    if (el.dataset.reveal === 'image' && el.parentElement) {
+      revealTargets.set(el.parentElement, el);
+      io.observe(el.parentElement);
+    } else {
+      io.observe(el);
+    }
+  }
 
   // ----------------------------------------------------------------
   // 4) BOOT
@@ -339,7 +366,7 @@
     document.querySelectorAll('[data-reveal="words"]').forEach(splitWords);
     sequenceContent();
     sequenceGrids();
-    document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+    document.querySelectorAll('[data-reveal]').forEach(observeReveal);
   }
 
   function ready() {
@@ -379,6 +406,6 @@
     if (el.dataset.reveal === 'lines')   splitLines(el);
     if (el.dataset.reveal === 'letters') splitLetters(el);
     if (el.dataset.reveal === 'words')   splitWords(el);
-    io.observe(el);
+    observeReveal(el);
   };
 })();

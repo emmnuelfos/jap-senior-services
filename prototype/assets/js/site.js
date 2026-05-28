@@ -43,32 +43,18 @@
     drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
   }
 
-  /* ---------- SCROLL REVEALS ---------- */
-  // Only hide elements that are off-screen. Already-visible elements stay
-  // visible so first paint isn't a flash of empty content.
-  if ('IntersectionObserver' in window) {
-    const vh = window.innerHeight || document.documentElement.clientHeight;
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const siblings = Array.from(entry.target.parentNode.querySelectorAll('.reveal-pending'));
-          const idx = siblings.indexOf(entry.target);
-          const delay = Math.min(idx, 5) * 60;
-          setTimeout(() => entry.target.classList.add('is-visible'), delay);
-          io.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
-
-    document.querySelectorAll('.reveal').forEach(el => {
-      const rect = el.getBoundingClientRect();
-      // Only animate if currently below the fold
-      if (rect.top > vh * 0.9) {
-        el.classList.add('reveal-pending');
-        io.observe(el);
-      }
-    });
-  }
+  /* ---------- SCROLL REVEALS (legacy — disabled) ----------
+     The original .reveal / .reveal-pending / .is-visible system has been
+     fully superseded by the [data-reveal] system in reveals.js, which
+     gives every element its own per-letter / per-word / clip-path
+     entrance. The two systems used to stack on the same element (e.g.
+     <div class="photo reveal"><img data-reveal="image"></div>): the
+     legacy layer added opacity:0 to the parent and the new layer
+     animated clip-path on the child, so even when the child's clip
+     opened, the parent stayed transparent and the image never
+     appeared. Removing this block lets the new system own the entire
+     reveal pipeline. The .reveal class is kept in markup for hooks but
+     no longer carries an animation. */
 
   /* ---------- ACTIVE NAV LINK ---------- */
   const path = window.location.pathname.split('/').pop() || 'index.html';
