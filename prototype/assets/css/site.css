@@ -1428,31 +1428,33 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   opacity: 1;
 }
 
-/* ----- 2. FADE-UP (default fallback) ----- */
+/* ----- 2. FADE-UP (default fallback) -----
+   The transition is declared on the .is-revealed selector, NOT the base,
+   so that adding data-reveal at runtime snaps to opacity:0 instantly
+   without animating the implicit 1→0 transition. Only when is-revealed
+   is added does the smooth 0→1 + slide-up play, with --seq-offset gating
+   each element's cascade slot. (Letters / words reveal types don't need
+   this dance because splitLetters/splitWords creates fresh spans that
+   start at opacity 0 from birth — no implicit prior state to fight.) */
 [data-reveal="fade"] {
   opacity: 0;
   transform: translateY(20px);
-  transition:
-    opacity   720ms var(--rv-ease-out),
-    transform 900ms var(--rv-ease);
-  /* --seq-offset is set by reveals.js so this element waits for any
-     previous sibling [data-reveal] to finish before starting. */
-  transition-delay: calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms));
   will-change: transform, opacity;
 }
 [data-reveal="fade"].is-revealed {
   opacity: 1;
   transform: translateY(0);
+  transition:
+    opacity   720ms var(--rv-ease-out),
+    transform 900ms var(--rv-ease);
+  transition-delay: calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms));
 }
 
-/* ----- 3. IMAGE — clip-path mask reveal ----- */
+/* ----- 3. IMAGE — clip-path mask reveal -----
+   Same is-revealed-only transition pattern. */
 [data-reveal="image"] {
   clip-path: inset(0 100% 0 0);
   -webkit-clip-path: inset(0 100% 0 0);
-  transition:
-    clip-path 1200ms var(--rv-ease),
-    -webkit-clip-path 1200ms var(--rv-ease),
-    transform 1400ms var(--rv-ease-out);
   transform: scale(1.05);
   will-change: clip-path, transform;
 }
@@ -1460,20 +1462,26 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   clip-path: inset(0 0 0 0);
   -webkit-clip-path: inset(0 0 0 0);
   transform: scale(1);
+  transition:
+    clip-path 1200ms var(--rv-ease),
+    -webkit-clip-path 1200ms var(--rv-ease),
+    transform 1400ms var(--rv-ease-out);
+  transition-delay: calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms));
 }
 
 /* ----- 4. SLIDE (left → right) ----- */
 [data-reveal="slide"] {
   opacity: 0;
   transform: translateX(-32px);
-  transition:
-    opacity   720ms var(--rv-ease-out),
-    transform 900ms var(--rv-ease);
   will-change: transform, opacity;
 }
 [data-reveal="slide"].is-revealed {
   opacity: 1;
   transform: translateX(0);
+  transition:
+    opacity   720ms var(--rv-ease-out),
+    transform 900ms var(--rv-ease);
+  transition-delay: calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms));
 }
 
 /* Per-section stagger helper: any direct children of a section that

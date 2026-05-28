@@ -54,19 +54,19 @@
       if (el.closest('.site-footer')) return;
       el.dataset.reveal = el.classList.contains('eyebrow') ? 'fade' : 'words';
     });
-    // Images: clip-path mask reveal — only for big standalone photos.
-    // Cards, timeline steps, testimonials etc. have their own treatments
-    // (hover scale, card lift) so we don't double-animate.
+    // Images: clip-path mask reveal. Skipped only for elements that
+    // already have their own bespoke animation pipeline (avatars,
+    // scattered gallery, hero parallax, CTA band mask) — the rest get
+    // the standard image reveal, including service / timeline /
+    // dedication card photos. The card hover scale still works on top
+    // of the reveal because hover specificity wins after the initial
+    // is-revealed transform: scale(1) has landed.
     document.querySelectorAll('main img').forEach(el => {
       if (el.dataset.reveal) return;
       if (el.closest('.ta-avatar') || el.matches('.ta-avatar')) return;
       if (el.closest('.ai-icon')) return;
       if (el.closest('.jap-scat__card')) return;       // gallery has its own animation
       if (el.classList.contains('hero-photo')) return; // Ken Burns + parallax already
-      if (el.closest('.service-card')) return;         // cards animate on hover
-      if (el.closest('.timeline-step')) return;        // how-it-works steps
-      if (el.closest('.testimonial')) return;          // testimonial cards
-      if (el.closest('.dedication-card')) return;      // about page dedication
       if (el.closest('.cta-band-photo')) return;       // CTA band photo has its own mask
       if (el.closest('[data-hero-parallax]')) return;  // hero parallax photos
       el.dataset.reveal = 'image';
