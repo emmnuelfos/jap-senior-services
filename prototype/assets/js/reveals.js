@@ -51,13 +51,21 @@
       if (el.closest('.site-footer')) return;
       el.dataset.reveal = el.classList.contains('eyebrow') ? 'fade' : 'words';
     });
-    // Images: clip-path mask reveal — but skip avatars + icons.
+    // Images: clip-path mask reveal — only for big standalone photos.
+    // Cards, timeline steps, testimonials etc. have their own treatments
+    // (hover scale, card lift) so we don't double-animate.
     document.querySelectorAll('main img').forEach(el => {
       if (el.dataset.reveal) return;
       if (el.closest('.ta-avatar') || el.matches('.ta-avatar')) return;
       if (el.closest('.ai-icon')) return;
       if (el.closest('.jap-scat__card')) return;       // gallery has its own animation
       if (el.classList.contains('hero-photo')) return; // Ken Burns + parallax already
+      if (el.closest('.service-card')) return;         // cards animate on hover
+      if (el.closest('.timeline-step')) return;        // how-it-works steps
+      if (el.closest('.testimonial')) return;          // testimonial cards
+      if (el.closest('.dedication-card')) return;      // about page dedication
+      if (el.closest('.cta-band-photo')) return;       // CTA band photo has its own mask
+      if (el.closest('[data-hero-parallax]')) return;  // hero parallax photos
       el.dataset.reveal = 'image';
     });
     // Buttons: gentle fade-up with stagger.
