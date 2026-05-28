@@ -241,20 +241,33 @@
   function sequenceContent() {
     document.querySelectorAll('[data-reveal]').forEach(el => {
       // Walk backwards through siblings to find the nearest previous
-      // element that also has a reveal. Only chain siblings — elements
-      // in different parents stay independent, so each container starts
-      // its own chain at offset 0.
+      // element that also has a reveal.
       let prev = el.previousElementSibling;
       while (prev && !prev.matches('[data-reveal]')) {
         prev = prev.previousElementSibling;
       }
-      if (prev) {
-        const prevOffset = parseFloat(prev.style.getPropertyValue('--seq-offset')) || 0;
-        const prevEnd    = prevOffset + fullDuration(prev);
-        el.style.setProperty('--seq-offset', prevEnd + 'ms');
-      } else {
+      if (!prev) {
         el.style.setProperty('--seq-offset', '0ms');
+        return;
       }
+      const type     = el.dataset.reveal;
+      const prevType = prev.dataset.reveal;
+      const prevOffset = parseFloat(prev.style.getPropertyValue('--seq-offset')) || 0;
+
+      // Special case: two consecutive paragraphs share the same offset.
+      // The second one starts at the same moment as the first instead of
+      // waiting for it to finish — its own internal per-word stagger is
+      // enough motion; piling another wait on top makes long sections
+      // feel sluggish (the About Us section was the obvious offender).
+      if (type === 'words' && prevType === 'words') {
+        el.style.setProperty('--seq-offset', prevOffset + 'ms');
+        return;
+      }
+
+      // Otherwise chain normally: this element starts when the previous
+      // sibling's animation has fully completed. That keeps titles and
+      // titles+paragraphs flowing in clear DOM hierarchy (top to bottom).
+      el.style.setProperty('--seq-offset', (prevOffset + fullDuration(prev)) + 'ms');
     });
   }
 
