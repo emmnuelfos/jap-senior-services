@@ -38,8 +38,9 @@
   function autoTag() {
     // Headings: per-letter fall-in (3D rotateX + translateY + opacity)
     // with a per-letter stagger. Editorial entrance that doesn't change
-    // the rest state — final type is identical to the original.
-    document.querySelectorAll('main h1, main h2, main h3, main .display-l, main .display-xl').forEach(el => {
+    // the rest state — final type is identical to the original. Applied
+    // to every heading level h1–h6 plus the display utility classes.
+    document.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6, main .display-l, main .display-xl, main .display-m').forEach(el => {
       if (el.dataset.reveal) return;
       el.dataset.reveal = 'letters';
     });
@@ -204,11 +205,39 @@
   //    Wait for fonts to load before splitting so line measurements
   //    are correct. Then auto-tag, split, observe.
   // ----------------------------------------------------------------
+  // Sequence consecutive sibling paragraphs so the next one only starts
+  // when the previous one has finished. We process paragraphs in DOM
+  // order — each gets a --para-offset that equals the previous sibling's
+  // (offset + duration). CSS applies that offset on top of the per-word
+  // stagger, so the chain plays back-to-back.
+  function sequenceParagraphs() {
+    const PARA_STAGGER = 72;   // matches the value used in the CSS rule
+    const PARA_DURATION = 1400;
+    document.querySelectorAll('[data-reveal="words"]').forEach(para => {
+      // Find the immediately previous *sibling* paragraph that also has
+      // the word reveal. We only chain siblings — paragraphs in different
+      // parents stay independent.
+      let prev = para.previousElementSibling;
+      while (prev && !prev.matches('[data-reveal="words"]')) {
+        prev = prev.previousElementSibling;
+      }
+      if (prev) {
+        const prevOffset = parseFloat(prev.style.getPropertyValue('--para-offset')) || 0;
+        const prevWords  = prev.querySelectorAll('.rv-word').length;
+        const prevEnd    = prevOffset + (prevWords - 1) * PARA_STAGGER + PARA_DURATION;
+        para.style.setProperty('--para-offset', prevEnd + 'ms');
+      } else {
+        para.style.setProperty('--para-offset', '0ms');
+      }
+    });
+  }
+
   function boot() {
     autoTag();
     document.querySelectorAll('[data-reveal="lines"]').forEach(splitLines);
     document.querySelectorAll('[data-reveal="letters"]').forEach(splitLetters);
     document.querySelectorAll('[data-reveal="words"]').forEach(splitWords);
+    sequenceParagraphs();
     document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
   }
 
@@ -236,6 +265,8 @@
       // word splits are layout-independent because their stagger uses
       // absolute indices, not measured positions.
       document.querySelectorAll('[data-reveal="lines"]').forEach(splitLines);
+      // Re-sequencing is cheap — keep it in sync in case content changed.
+      sequenceParagraphs();
     }, RESPLIT_DEBOUNCE);
   });
 

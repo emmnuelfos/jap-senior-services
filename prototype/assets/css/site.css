@@ -1416,7 +1416,10 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   display: inline-block;
   opacity: 0;
   transition: opacity 1400ms ease-out;
-  transition-delay: calc(var(--word-i, 0) * 72ms);
+  /* --para-offset is set by reveals.js so each sibling paragraph begins
+     where the previous one finished. First paragraph in a group has
+     offset 0, so it starts immediately. */
+  transition-delay: calc(var(--para-offset, 0ms) + var(--word-i, 0) * 72ms);
   will-change: opacity;
 }
 [data-reveal="words"].is-revealed .rv-word {
