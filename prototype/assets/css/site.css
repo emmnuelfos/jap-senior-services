@@ -1348,6 +1348,136 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 }
 
 /* ============================================================
+   STATS BAND — "By the numbers"
+   Full-bleed navy section. Editorial: huge Fraunces numbers in
+   ivory, brass plus/percent accents, animated icons sitting in
+   small brass-tinted chips, vertical hairlines between cells.
+   ============================================================ */
+.stats-band {
+  position: relative;
+  background: var(--forest);
+  color: var(--ivory);
+  padding-block: clamp(72px, 9vw, 128px);
+  overflow: hidden;
+}
+.stats-band::before {
+  /* Soft brass radial bloom in the upper-right for depth */
+  content: "";
+  position: absolute;
+  top: -20%; right: -10%;
+  width: 60%; height: 80%;
+  background: radial-gradient(ellipse at center, rgba(184, 118, 62, 0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.stats-band-inner {
+  position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+  z-index: 1;
+}
+.stats-band-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: clamp(40px, 5vw, 64px);
+  flex-wrap: wrap;
+}
+.stats-band-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass-100);
+}
+.stats-band-eyebrow::before {
+  content: "";
+  width: 28px; height: 1px;
+  background: var(--brass);
+  margin-right: 14px;
+  display: inline-block;
+}
+.stats-band-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 350;
+  font-size: clamp(28px, 3.4vw, 44px);
+  color: var(--ivory);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.stats-band-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid rgba(184, 118, 62, 0.32);
+  border-bottom: 1px solid rgba(184, 118, 62, 0.32);
+}
+.stats-cell {
+  padding: clamp(36px, 4vw, 56px) clamp(20px, 2vw, 36px);
+  border-right: 1px solid rgba(245, 241, 234, 0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  position: relative;
+}
+.stats-cell:last-child { border-right: 0; }
+.stats-icon {
+  display: inline-flex;
+  width: 64px; height: 64px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(184, 118, 62, 0.10);
+  border: 1px solid rgba(184, 118, 62, 0.32);
+  border-radius: 50%;
+}
+.stats-icon .ai-icon { filter: brightness(0) invert(1) opacity(0.92); }
+.stats-num {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(56px, 6.4vw, 88px);
+  line-height: 1;
+  color: var(--ivory);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.stats-plus {
+  color: var(--brass);
+  margin-left: 2px;
+}
+.stats-eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.stats-desc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(245, 241, 234, 0.72);
+  max-width: 26ch;
+}
+
+@media (max-width: 900px) {
+  .stats-band-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-cell:nth-child(2) { border-right: 0; }
+  .stats-cell:nth-child(-n+2) { border-bottom: 1px solid rgba(245, 241, 234, 0.10); }
+}
+@media (max-width: 520px) {
+  .stats-band-grid { grid-template-columns: 1fr; }
+  .stats-cell { border-right: 0; border-bottom: 1px solid rgba(245, 241, 234, 0.10); }
+  .stats-cell:last-child { border-bottom: 0; }
+}
+
+/* ============================================================
    SCATTERED TESTIMONIAL GALLERY
    Cards with a client photo background and a navy brand gradient
    at the bottom holding the quote + attribution.
@@ -1598,6 +1728,55 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 }
 .jap-scat.is-entered .jap-scat__counter { opacity: 1; }
 
+/* ---------- SPOTLIGHT MODE ----------
+   Triggered by clicking a card. A full-viewport navy backdrop fades in
+   behind the active card, the active card scales up and centres, the
+   other cards dim. The navigation stays above the backdrop so it's
+   still clickable. Click anywhere outside the active card to close. */
+.jap-scat-spotlight {
+  /* Body class — lets us add a backdrop without altering page flow. */
+}
+.jap-scat-spotlight::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 30, 60, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 80;
+  opacity: 0;
+  animation: japScatFadeBack .35s var(--jap-ease) forwards;
+  pointer-events: none;       /* Card click handler manages dismiss. */
+}
+@keyframes japScatFadeBack { to { opacity: 1; } }
+
+/* Navigation rides above the backdrop and stays interactive. */
+.jap-scat-spotlight .site-header { position: relative; z-index: 90; }
+
+/* Lift the whole gallery above the backdrop so the active card and the
+   prev/next arrows are still clickable. */
+.jap-scat.is-spotlight { position: relative; z-index: 85; }
+
+/* Lift the active card above the backdrop and the rest of the gallery. */
+.jap-scat.is-spotlight .jap-scat__card.is-active {
+  position: relative;
+  z-index: 95;
+  transform: rotate(0deg) translateY(-12px) scale(1.4);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
+  cursor: zoom-out;
+}
+/* Dim and slightly mute the non-active cards. */
+.jap-scat.is-spotlight .jap-scat__card:not(.is-active) {
+  opacity: 0.18;
+  filter: blur(2px) saturate(.7);
+  pointer-events: none;
+}
+/* Make nav arrows readable on the dim backdrop. */
+.jap-scat.is-spotlight .jap-scat__nav {
+  position: absolute;
+  z-index: 96;
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 900px) {
   .jap-scat {
@@ -1606,6 +1785,7 @@ body.cards-photo-left .service-card .body { padding: 24px; }
     --jap-card-gap: 16px;
     height: clamp(540px, 76vh, 680px);
   }
+  .jap-scat.is-spotlight .jap-scat__card.is-active { transform: rotate(0deg) translateY(-12px) scale(1.25); }
   .jap-scat__nav { width: 50px; height: 50px; }
   .jap-scat__nav--prev { left: 16px; }
   .jap-scat__nav--next { right: 16px; }
@@ -1947,24 +2127,8 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 }
 .home-hero[data-variant="editorial-split"] .right img {
   width: 100%; height: 100%; object-fit: cover; min-height: 420px;
-  /* Wide, smooth gradient blend on the left edge — fades across ~30% of the
-     photo width so the transition into Ivory feels seamless. */
-  -webkit-mask-image: linear-gradient(to right,
-    rgba(0,0,0,0)    0%,
-    rgba(0,0,0,0.15) 6%,
-    rgba(0,0,0,0.45) 14%,
-    rgba(0,0,0,0.75) 22%,
-    rgba(0,0,0,0.95) 30%,
-    #000             36%,
-    #000             100%);
-          mask-image: linear-gradient(to right,
-    rgba(0,0,0,0)    0%,
-    rgba(0,0,0,0.15) 6%,
-    rgba(0,0,0,0.45) 14%,
-    rgba(0,0,0,0.75) 22%,
-    rgba(0,0,0,0.95) 30%,
-    #000             36%,
-    #000             100%);
+  /* Gradient mask lives on the outer .right so it stays fixed when the
+     inner photo translates with the mouse parallax. */
 }
 .home-hero[data-variant="editorial-split"] .right .caption {
   position: absolute;
@@ -2015,11 +2179,30 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 }
 
 /* ---------- HERO FLOATING QUOTE CARD ---------- */
-/* ---------- HERO PARALLAX STAGE ---------- */
-/* The stage is the clipping window. The zoom wrapper performs a slow
-   continuous Ken Burns. The inner image is translated on mousemove via
-   --mx / --my CSS custom properties. Two nested layers keep the two
-   effects independent so neither animation cancels the other. */
+/* ---------- HERO PARALLAX STAGE ----------
+   The .right wrapper carries the seamless left-edge mask gradient so the
+   blend into Ivory never shifts when the photo moves. The stage is the
+   clipping window. The zoom wrapper does a slow Ken Burns. The inner img
+   translates on mousemove via --mx / --my custom properties set on the
+   whole hero section, so the parallax fires from anywhere in the hero. */
+.home-hero[data-variant="editorial-split"] .right {
+  -webkit-mask-image: linear-gradient(to right,
+    rgba(0,0,0,0)    0%,
+    rgba(0,0,0,0.15) 6%,
+    rgba(0,0,0,0.45) 14%,
+    rgba(0,0,0,0.75) 22%,
+    rgba(0,0,0,0.95) 30%,
+    #000             36%,
+    #000             100%);
+          mask-image: linear-gradient(to right,
+    rgba(0,0,0,0)    0%,
+    rgba(0,0,0,0.15) 6%,
+    rgba(0,0,0,0.45) 14%,
+    rgba(0,0,0,0.75) 22%,
+    rgba(0,0,0,0.95) 30%,
+    #000             36%,
+    #000             100%);
+}
 .home-hero[data-variant="editorial-split"] .right .hero-photo-stage {
   position: absolute;
   inset: 0;
@@ -2042,27 +2225,11 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 
 .home-hero[data-variant="editorial-split"] .right .hero-photo {
   width: 100%; height: 100%; object-fit: cover; min-height: 440px;
-  /* Mouse parallax translate — --mx / --my are set from JS, range -1..1 */
+  /* Mouse parallax translate — --mx / --my are set from JS, range -1..1.
+     The vars live on .home-hero (the parallax stage); they cascade here. */
   transform: translate3d(calc(var(--mx, 0) * 14px), calc(var(--my, 0) * 10px), 0);
   transition: transform 800ms cubic-bezier(.16, 1, .3, 1);
   will-change: transform;
-  /* Same wide smooth gradient as the generic rule above */
-  -webkit-mask-image: linear-gradient(to right,
-    rgba(0,0,0,0)    0%,
-    rgba(0,0,0,0.15) 6%,
-    rgba(0,0,0,0.45) 14%,
-    rgba(0,0,0,0.75) 22%,
-    rgba(0,0,0,0.95) 30%,
-    #000             36%,
-    #000             100%);
-          mask-image: linear-gradient(to right,
-    rgba(0,0,0,0)    0%,
-    rgba(0,0,0,0.15) 6%,
-    rgba(0,0,0,0.45) 14%,
-    rgba(0,0,0,0.75) 22%,
-    rgba(0,0,0,0.95) 30%,
-    #000             36%,
-    #000             100%);
 }
 .hero-quote-card {
   position: absolute;
