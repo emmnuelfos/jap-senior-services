@@ -1,22 +1,23 @@
 /* ============================================================
    J.A.P Senior Services — Animated Icon loader
-   Reads <span class="ai-icon" data-icon="<name>" data-loop="false">
-   elements, fetches the matching Lottie JSON from assets/icons/<name>.json,
-   and plays each animation only when the icon is in the viewport.
+   Reads <span class="ai-icon" data-icon="<name>"> elements,
+   fetches the matching Lottie JSON from assets/icons/<name>.json,
+   and plays each animation ONCE — the first time the icon enters
+   the viewport, after the reveal cascade's --seq-offset delay.
 
-   Sequencing: on the FIRST time an icon enters the viewport, the
-   initial play is delayed by the cascade's `--seq-offset` — read
-   from the icon itself if it carries a reveal, otherwise from the
-   closest reveal ancestor. This lets the Lottie play in step with
-   the surrounding title / paragraph reveal instead of jumping
-   ahead of it.
+   Sequencing: the FIRST viewport entry kicks off a Lottie cycle
+   delayed by `--seq-offset` (read from the icon itself if it
+   carries a reveal, otherwise from the closest reveal ancestor)
+   so the Lottie animation moves in step with the surrounding
+   title / paragraph reveal.
 
-   Loop behaviour: loop is the DEFAULT. Each cycle finishes, the icon
-   pauses for 2 seconds, then plays again. Opt-out per icon with
-   `data-loop="false"` to play once. Off-screen icons pause; when they
-   come back into view they resume from where they were paused
-   (no jump back to frame 0) — the first play is the only one that
-   happens at frame 0.
+   Play behaviour: each Lottie plays exactly one cycle per page
+   load. Once started, it plays through to completion (even if
+   the user scrolls it off-screen mid-cycle), then stops on its
+   end frame. Re-entering the viewport never restarts or resumes
+   anything. The only thing that can restart a Lottie is a hover
+   (deliberate user gesture) — there is no automatic loop and no
+   pause-on-exit logic any more.
 
    Uses the lottie-web library (loaded once from CDN).
    ============================================================ */
@@ -26,7 +27,6 @@
 
   const ICON_DIR = 'assets/icons/';
   const LOTTIE_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie_light.min.js';
-  const LOOP_PAUSE_MS = 2000;   // gap between loops
   const IO_THRESHOLD = 0.2;
 
   // Cache JSON across multiple instances of the same icon.
@@ -53,18 +53,6 @@
     return lottiePromise;
   }
 
-  // Schedule the next play cycle after a pause, but only if we're still
-  // intersecting and the user hasn't opted out.
-  function scheduleNextLoop(el) {
-    if (!el.__anim || !el.__inView) return;
-    clearTimeout(el.__loopTimer);
-    el.__loopTimer = setTimeout(() => {
-      if (el.__anim && el.__inView) {
-        el.__anim.goToAndPlay(0, true);
-      }
-    }, LOOP_PAUSE_MS);
-  }
-
   // Resolve the cascade offset (ms) that this icon should wait for
   // before its FIRST play. Reads --seq-offset from the icon itself
   // (if it carries a data-reveal) or from the nearest reveal
@@ -82,23 +70,20 @@
     return 0;
   }
 
-  // Kick off the very first play, optionally after the cascade delay.
+  // Kick off the one and only play, after the cascade delay.
   // Resolves --seq-offset lazily at this call site so reveals.js has
   // had time to write the cascade values regardless of script order.
   function firstPlay(el) {
     if (el.__hasPlayed || !el.__anim) return;
+    el.__hasPlayed = true; // mark immediately so the IO can't re-enter
     const delay = resolveSeqOffset(el);
     clearTimeout(el.__firstTimer);
     if (delay <= 0) {
       el.__anim.goToAndPlay(0, true);
-      el.__hasPlayed = true;
       return;
     }
     el.__firstTimer = setTimeout(() => {
-      if (el.__anim && el.__inView && !el.__hasPlayed) {
-        el.__anim.goToAndPlay(0, true);
-        el.__hasPlayed = true;
-      }
+      if (el.__anim) el.__anim.goToAndPlay(0, true);
     }, delay);
   }
 
@@ -119,7 +104,6 @@
     el.style.flex = '0 0 auto';
     el.style.overflow = 'hidden';
 
-    const loopOff = el.getAttribute('data-loop') === 'false';
     const speed = parseFloat(el.getAttribute('data-speed') || '1');
 
     const [lottie, data] = await Promise.all([loadLottie(), loadJson(name)]).catch(e => {
@@ -128,9 +112,9 @@
     });
     if (!lottie || !data) return;
 
-    // We control looping manually via the 'complete' event so we can insert
-    // a fixed pause between cycles. Lottie's own `loop:true` plays without
-    // a gap, which is the behaviour we want to avoid.
+    // Single play, no autoplay — we trigger the cycle from the IO
+    // after the cascade delay, and Lottie's own end-of-cycle event
+    // does nothing (no loop wiring).
     const anim = lottie.loadAnimation({
       container: el,
       renderer: 'svg',
@@ -142,51 +126,32 @@
     anim.setSpeed(speed);
 
     el.__anim = anim;
-    el.__inView = false;
     el.__hasPlayed = false;
-    // NOTE: --seq-offset is resolved lazily at first-play time, not
-    // here. Mounting may happen before reveals.js has written the
-    // cascade offsets — by the time the icon actually scrolls into
-    // view the value is reliably available.
-
-    if (!loopOff) {
-      anim.addEventListener('complete', () => scheduleNextLoop(el));
-    }
+    // NOTE: --seq-offset is resolved lazily at first-play time. Mounting
+    // may happen before reveals.js has written the cascade offsets — by
+    // the time the icon actually scrolls into view the value is reliably
+    // available.
   }
 
-  // Single IntersectionObserver gates ALL animations: play on FIRST enter
-  // (delayed by --seq-offset so the icon joins the cascade), pause on
-  // exit, and on subsequent re-entries resume from where it was paused
-  // rather than jumping back to frame 0.
+  // Single IntersectionObserver fires the one and only play the first
+  // time the icon crosses the threshold. Once started, the Lottie runs
+  // to completion (off-screen is fine — it's a brief one-shot) and the
+  // observer unhooks itself. Nothing replays on re-entry.
   const io = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
     for (const e of entries) {
       const el = e.target;
       if (!el.__anim) continue;
-      const visible = e.isIntersecting && e.intersectionRatio > IO_THRESHOLD;
-      el.__inView = visible;
-      if (visible) {
-        if (!el.__hasPlayed) {
-          // First time in view — honour the cascade delay.
-          firstPlay(el);
-        } else if (el.__anim.isPaused) {
-          // Already played at least once — just pick up where we left
-          // off so the user doesn't see the icon flick back to frame 0.
-          el.__anim.play();
-        }
-      } else {
-        // Off-screen: pause playback and cancel any pending loop / first-play.
-        clearTimeout(el.__loopTimer);
-        clearTimeout(el.__firstTimer);
-        if (el.__anim && !el.__anim.isPaused) el.__anim.pause();
+      if (e.isIntersecting && e.intersectionRatio > IO_THRESHOLD) {
+        if (!el.__hasPlayed) firstPlay(el);
+        io.unobserve(el);
       }
     }
   }, { threshold: [0, IO_THRESHOLD, 0.5] }) : null;
 
-  // Hover trigger — replay on hover regardless of pause state.
+  // Hover trigger — deliberate user gesture, allowed to replay.
   function attachHover(el) {
     el.addEventListener('mouseenter', () => {
       if (!el.__anim) return;
-      clearTimeout(el.__loopTimer);
       el.__anim.goToAndPlay(0, true);
     });
   }
