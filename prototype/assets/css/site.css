@@ -1348,6 +1348,164 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 }
 
 /* ============================================================
+   REVEALS — premium per-line / fade / image animations
+   Activated by the reveals.js IntersectionObserver toggling
+   `is-revealed` on each viewport entry. Reset on exit so the
+   next entry plays again. Honors prefers-reduced-motion.
+
+   Easing notes — we use a tight cubic for the in-tail so the
+   motion settles cleanly without the "rubber-band" feel.
+   ============================================================ */
+:root {
+  --rv-ease:  cubic-bezier(.16, 1, .3, 1);
+  --rv-ease-out: cubic-bezier(.22, 1, .36, 1);
+}
+
+/* When reduced-motion is requested OR reveals.js bails, skip everything. */
+.reveals-off [data-reveal] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+
+/* ----- 1. PER-LINE TEXT ----- */
+[data-reveal="lines"] {
+  /* Overflow hidden creates the "lines slide up from below" feel
+     because each word's parent is its line wrapper visually. */
+}
+[data-reveal="lines"] .rv-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(72%) rotate(0.001deg);
+  transition:
+    opacity   720ms var(--rv-ease-out),
+    transform 720ms var(--rv-ease);
+  transition-delay: calc(var(--line-i, 0) * 70ms);
+  will-change: transform, opacity;
+}
+[data-reveal="lines"].is-revealed .rv-word {
+  opacity: 1;
+  transform: translateY(0) rotate(0deg);
+}
+
+/* ----- 2. FADE-UP (default fallback) ----- */
+[data-reveal="fade"] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity   720ms var(--rv-ease-out),
+    transform 900ms var(--rv-ease);
+  transition-delay: var(--rv-delay, 0ms);
+  will-change: transform, opacity;
+}
+[data-reveal="fade"].is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ----- 3. IMAGE — clip-path mask reveal ----- */
+[data-reveal="image"] {
+  clip-path: inset(0 100% 0 0);
+  -webkit-clip-path: inset(0 100% 0 0);
+  transition:
+    clip-path 1200ms var(--rv-ease),
+    -webkit-clip-path 1200ms var(--rv-ease),
+    transform 1400ms var(--rv-ease-out);
+  transform: scale(1.05);
+  will-change: clip-path, transform;
+}
+[data-reveal="image"].is-revealed {
+  clip-path: inset(0 0 0 0);
+  -webkit-clip-path: inset(0 0 0 0);
+  transform: scale(1);
+}
+
+/* ----- 4. SLIDE (left → right) ----- */
+[data-reveal="slide"] {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition:
+    opacity   720ms var(--rv-ease-out),
+    transform 900ms var(--rv-ease);
+  will-change: transform, opacity;
+}
+[data-reveal="slide"].is-revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Per-section stagger helper: any direct children of a section that
+   have data-reveal pick up a sibling-index delay automatically. */
+main section > [data-reveal]:nth-child(1) { --rv-delay: 0ms; }
+main section > [data-reveal]:nth-child(2) { --rv-delay: 90ms; }
+main section > [data-reveal]:nth-child(3) { --rv-delay: 180ms; }
+main section > [data-reveal]:nth-child(4) { --rv-delay: 270ms; }
+main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
+
+/* ----- 5. NAVIGATION — on-load stagger ----- */
+.site-header { animation: japNavSlide 800ms var(--rv-ease) both; }
+@keyframes japNavSlide {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+.site-header .brand-logo,
+.site-header .nav a,
+.site-header .header-cta > * {
+  opacity: 0;
+  transform: translateY(-12px);
+  animation: japNavItem 700ms var(--rv-ease-out) forwards;
+}
+.site-header .brand-logo            { animation-delay: 200ms; }
+.site-header .nav a:nth-child(1)    { animation-delay: 350ms; }
+.site-header .nav a:nth-child(2)    { animation-delay: 410ms; }
+.site-header .nav a:nth-child(3)    { animation-delay: 470ms; }
+.site-header .nav a:nth-child(4)    { animation-delay: 530ms; }
+.site-header .nav a:nth-child(5)    { animation-delay: 590ms; }
+.site-header .nav a:nth-child(6)    { animation-delay: 650ms; }
+.site-header .nav a:nth-child(7)    { animation-delay: 710ms; }
+.site-header .header-cta > :nth-child(1) { animation-delay: 800ms; }
+.site-header .header-cta > :nth-child(2) { animation-delay: 870ms; }
+.site-header .header-cta > :nth-child(3) { animation-delay: 940ms; }
+
+@keyframes japNavItem { to { opacity: 1; transform: translateY(0); } }
+
+/* Nav link hover — brass underline grow from centre, with subtle lift. */
+.nav a {
+  position: relative;
+  transition: color 220ms var(--rv-ease-out), transform 220ms var(--rv-ease-out);
+}
+.nav a::after {
+  /* Underline is already defined elsewhere; we just upgrade its motion. */
+  transform-origin: center;
+  transition: transform 260ms var(--rv-ease-out);
+}
+.nav a:hover { transform: translateY(-1px); }
+
+/* ----- 6. BUTTONS — softer easing + tactile press ----- */
+.btn {
+  transition:
+    transform 280ms var(--rv-ease-out),
+    background-color 280ms var(--rv-ease-out),
+    color 280ms var(--rv-ease-out),
+    border-color 280ms var(--rv-ease-out),
+    box-shadow 320ms var(--rv-ease-out);
+}
+.btn:hover { transform: translateY(-3px); }
+.btn:active { transform: translateY(-1px) scale(0.985); transition-duration: 80ms; }
+.btn-primary:hover { box-shadow: 0 12px 28px rgba(45, 90, 145, 0.28); }
+.btn-brass:hover   { box-shadow: 0 12px 28px rgba(184, 118, 62, 0.32); }
+.btn-arrow svg     { transition: transform 320ms var(--rv-ease-out); }
+.btn-arrow:hover svg { transform: translateX(4px); }
+
+/* Service card hover refinement */
+.service-card { transition: transform 380ms var(--rv-ease-out), border-color 380ms var(--rv-ease-out), box-shadow 380ms var(--rv-ease-out); }
+.service-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(45, 90, 145, 0.10); }
+.service-card .photo img { transition: transform 800ms var(--rv-ease-out), filter 800ms var(--rv-ease-out); }
+.service-card:hover .photo img { transform: scale(1.05); filter: brightness(1.04) saturate(1.06); }
+
+/* Reduce motion fallback */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+  .site-header, .site-header * { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* ============================================================
    STATS BAND — "By the numbers"
    Full-bleed navy section. Editorial: huge Fraunces numbers in
    ivory, brass plus/percent accents, animated icons sitting in
