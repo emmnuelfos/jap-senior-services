@@ -142,22 +142,40 @@
     Array.from(node.childNodes).forEach(child => wrapTextNodesByLetter(child, counter));
   }
 
+  // Stash the original text as aria-label so screen readers announce
+  // the heading or paragraph as a single string, then mark every
+  // wrapping span aria-hidden so AT skips the per-character/per-word
+  // pieces. SEO is unaffected (heading tag and textContent stay intact)
+  // and visual users see the same animation.
+  function applyA11yLabel(el) {
+    if (el.hasAttribute('aria-label')) return;
+    const text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+    if (text) el.setAttribute('aria-label', text);
+  }
+  function hideSpansFromAT(el, selector) {
+    el.querySelectorAll(selector).forEach(s => s.setAttribute('aria-hidden', 'true'));
+  }
+
   function splitLetters(el) {
     if (!el.dataset.rvOriginal) el.dataset.rvOriginal = el.innerHTML;
     else el.innerHTML = el.dataset.rvOriginal;
+    applyA11yLabel(el);
     const counter = { n: 0 };
     wrapTextNodesByLetter(el, counter);
     el.style.setProperty('--rv-letters', counter.n);
+    hideSpansFromAT(el, '.rv-letter');
   }
 
   function splitWords(el) {
     if (!el.dataset.rvOriginal) el.dataset.rvOriginal = el.innerHTML;
     else el.innerHTML = el.dataset.rvOriginal;
+    applyA11yLabel(el);
     wrapTextNodes(el);
     // Assign an absolute index per word so CSS can stagger per word.
     const words = el.querySelectorAll('.rv-word');
     words.forEach((w, i) => w.style.setProperty('--word-i', i));
     el.style.setProperty('--rv-words', words.length);
+    hideSpansFromAT(el, '.rv-word');
   }
 
   function splitLines(el) {
@@ -165,9 +183,10 @@
     // losing the source formatting (em, br, etc).
     if (!el.dataset.rvOriginal) el.dataset.rvOriginal = el.innerHTML;
     else el.innerHTML = el.dataset.rvOriginal;
-
+    applyA11yLabel(el);
     wrapTextNodes(el);
     measureLines(el);
+    hideSpansFromAT(el, '.rv-word');
   }
 
   function measureLines(el) {
