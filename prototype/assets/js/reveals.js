@@ -302,50 +302,59 @@
   // for every preceding cell's title + paragraph to finish first.
   const IMG_STEP = 100;
 
+  // Per-type cell-to-cell stagger inside a grid. Each cell's icon /
+  // title / paragraph runs in its OWN track across the grid at a
+  // tight 100 ms beat, so card 5's title doesn't have to wait for
+  // card 1-4 to finish their full per-cell cascade first. The base
+  // offset between types (0 / 200 / 400) preserves the
+  // icon → title → paragraph reading order inside each card.
+  const TYPE_STEP   = 100;
+  const TYPE_BASE   = {
+    fade:    0,    // icons + buttons
+    letters: 200,  // headings
+    words:   400,  // paragraphs
+  };
+
   function sequenceGrids() {
     GRID_SELECTORS.forEach(selector => {
       document.querySelectorAll(selector).forEach(grid => {
-        // Walk every reveal inside the grid in DOM order — icon → title →
-        // paragraph inside each cell, then on to the next cell — and
-        // overwrite the sibling-based --seq-offset that sequenceContent
-        // computed. The deep walk catches reveals that sibling-walking
-        // misses (e.g. an .ai-icon inside .pgm inside .body inside a
-        // .service-card has no sibling reveal at any level).
-        let runningOffset = 0;
-        let lastType = null;
-        let firstAssigned = false;
-        Array.from(grid.children).forEach(cell => {
-          const reveals = cell.querySelectorAll('[data-reveal]');
-          if (reveals.length === 0) return;
-          reveals.forEach((el, idxInCell) => {
-            const type = el.dataset.reveal;
-            if (!firstAssigned) {
-              runningOffset = 0;
-              firstAssigned = true;
-            } else {
-              // Two consecutive paragraph reveals inside the same cell
-              // get the larger PARA_STEP so they read top-to-bottom.
-              // Cross-cell jumps and everything else use SEQ_STEP for
-              // a snappy cascade.
-              const sameWordsToWords = (idxInCell > 0 && type === 'words' && lastType === 'words');
-              runningOffset += sameWordsToWords ? PARA_STEP : SEQ_STEP;
-            }
-            el.style.setProperty('--seq-offset', runningOffset + 'ms');
-            lastType = type;
+        // For each reveal TYPE, find every reveal of that type inside
+        // the grid in DOM order and assign --seq-offset =
+        // (typeBase + i * TYPE_STEP). The shared base offset means
+        // titles always trail their card's icon by ~200 ms, and
+        // paragraphs trail their card's title by ~200 ms, while every
+        // card's icon (and every card's title, etc.) cascades through
+        // the grid at one consistent 100 ms beat.
+        Object.entries(TYPE_BASE).forEach(([type, base]) => {
+          const items = grid.querySelectorAll('[data-reveal="' + type + '"]');
+          items.forEach((el, i) => {
+            el.style.setProperty('--seq-offset', (base + i * TYPE_STEP) + 'ms');
           });
         });
 
-        // Image cascade — images inside this grid get their own tight
-        // 100 ms stagger, regardless of how the per-cell text cascade
-        // landed. Without this, the second column of card photos would
-        // sit behind ~600 ms of text reveals from card 1 before its
-        // image even started fading in. Walking in DOM order so the
-        // visual order matches the source order. Applied AFTER the
-        // text cascade so this overwrite always wins for images.
+        // Image cascade — same tight 100 ms beat starting at 0.
+        // Applied after the type cascade so it always wins for images
+        // (even though "image" isn't in TYPE_BASE — being explicit
+        // here insulates the image step from any future TYPE_BASE
+        // changes).
         const imgs = grid.querySelectorAll('img[data-reveal="image"]');
         imgs.forEach((img, i) => {
           img.style.setProperty('--seq-offset', (i * IMG_STEP) + 'ms');
         });
+
+        // Trailing link-arrows ("More about us →" / "See all services
+        // →") share the fade type with icons but sit at the BOTTOM of
+        // their cell. Push them past the paragraph track so they don't
+        // flash in alongside the icons at offset 0–500. Each trailing
+        // link gets offset = (last words-track slot) + TYPE_STEP.
+        const tailLinks = grid.querySelectorAll('a.link-arrow[data-reveal="fade"]');
+        if (tailLinks.length) {
+          const wordsCount = grid.querySelectorAll('[data-reveal="words"]').length;
+          const tailBase   = TYPE_BASE.words + wordsCount * TYPE_STEP;
+          tailLinks.forEach((link, i) => {
+            link.style.setProperty('--seq-offset', (tailBase + i * TYPE_STEP) + 'ms');
+          });
+        }
       });
     });
   }
