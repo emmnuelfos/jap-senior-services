@@ -4,9 +4,19 @@
    elements, fetches the matching Lottie JSON from assets/icons/<name>.json,
    and plays each animation only when the icon is in the viewport.
 
+   Sequencing: on the FIRST time an icon enters the viewport, the
+   initial play is delayed by the cascade's `--seq-offset` — read
+   from the icon itself if it carries a reveal, otherwise from the
+   closest reveal ancestor. This lets the Lottie play in step with
+   the surrounding title / paragraph reveal instead of jumping
+   ahead of it.
+
    Loop behaviour: loop is the DEFAULT. Each cycle finishes, the icon
    pauses for 2 seconds, then plays again. Opt-out per icon with
-   `data-loop="false"` to play once. Off-screen icons are always paused.
+   `data-loop="false"` to play once. Off-screen icons pause; when they
+   come back into view they resume from where they were paused
+   (no jump back to frame 0) — the first play is the only one that
+   happens at frame 0.
 
    Uses the lottie-web library (loaded once from CDN).
    ============================================================ */
@@ -55,6 +65,43 @@
     }, LOOP_PAUSE_MS);
   }
 
+  // Resolve the cascade offset (ms) that this icon should wait for
+  // before its FIRST play. Reads --seq-offset from the icon itself
+  // (if it carries a data-reveal) or from the nearest reveal
+  // ancestor. Falls back to 0 when nothing is found.
+  function resolveSeqOffset(el) {
+    const sources = [el];
+    const ancestor = el.parentElement && el.parentElement.closest('[data-reveal]');
+    if (ancestor) sources.push(ancestor);
+    for (const node of sources) {
+      const raw = node.style.getPropertyValue('--seq-offset')
+        || getComputedStyle(node).getPropertyValue('--seq-offset');
+      const parsed = parseFloat(raw);
+      if (!Number.isNaN(parsed) && parsed > 0) return parsed;
+    }
+    return 0;
+  }
+
+  // Kick off the very first play, optionally after the cascade delay.
+  // Resolves --seq-offset lazily at this call site so reveals.js has
+  // had time to write the cascade values regardless of script order.
+  function firstPlay(el) {
+    if (el.__hasPlayed || !el.__anim) return;
+    const delay = resolveSeqOffset(el);
+    clearTimeout(el.__firstTimer);
+    if (delay <= 0) {
+      el.__anim.goToAndPlay(0, true);
+      el.__hasPlayed = true;
+      return;
+    }
+    el.__firstTimer = setTimeout(() => {
+      if (el.__anim && el.__inView && !el.__hasPlayed) {
+        el.__anim.goToAndPlay(0, true);
+        el.__hasPlayed = true;
+      }
+    }, delay);
+  }
+
   // Mount one icon container.
   async function mount(el) {
     if (el.dataset.mounted === '1') return;
@@ -97,29 +144,39 @@
     el.__anim = anim;
     el.__inView = false;
     el.__hasPlayed = false;
+    // NOTE: --seq-offset is resolved lazily at first-play time, not
+    // here. Mounting may happen before reveals.js has written the
+    // cascade offsets — by the time the icon actually scrolls into
+    // view the value is reliably available.
 
     if (!loopOff) {
       anim.addEventListener('complete', () => scheduleNextLoop(el));
     }
   }
 
-  // Single IntersectionObserver gates ALL animations: play on enter, pause
-  // (and cancel the loop timer) on exit. Nothing animates off-screen.
+  // Single IntersectionObserver gates ALL animations: play on FIRST enter
+  // (delayed by --seq-offset so the icon joins the cascade), pause on
+  // exit, and on subsequent re-entries resume from where it was paused
+  // rather than jumping back to frame 0.
   const io = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
     for (const e of entries) {
       const el = e.target;
       if (!el.__anim) continue;
       const visible = e.isIntersecting && e.intersectionRatio > IO_THRESHOLD;
       el.__inView = visible;
-      const loopOff = el.getAttribute('data-loop') === 'false';
       if (visible) {
-        if (!el.__hasPlayed || !loopOff) {
-          el.__anim.goToAndPlay(0, true);
-          el.__hasPlayed = true;
+        if (!el.__hasPlayed) {
+          // First time in view — honour the cascade delay.
+          firstPlay(el);
+        } else if (el.__anim.isPaused) {
+          // Already played at least once — just pick up where we left
+          // off so the user doesn't see the icon flick back to frame 0.
+          el.__anim.play();
         }
       } else {
-        // Off-screen: stop both the current playback and the pending loop.
+        // Off-screen: pause playback and cancel any pending loop / first-play.
         clearTimeout(el.__loopTimer);
+        clearTimeout(el.__firstTimer);
         if (el.__anim && !el.__anim.isPaused) el.__anim.pause();
       }
     }

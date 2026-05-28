@@ -1,7 +1,7 @@
 /* ============================================================
    J.A.P Senior Services — Reveals system
    Premium per-line + image + element reveal animations,
-   re-triggered every time the host section enters the viewport.
+   played ONCE the first time the host element enters the viewport.
 
    Mark an element with one of:
      data-reveal="lines"   →  wrap every word in a span, group by
@@ -12,10 +12,12 @@
      data-reveal="slide"   →  slide in from the left
    Auto-discovery is also applied (see autoTag below).
 
-   Behaviour on each viewport entry/exit:
-     enter  →  add `is-revealed`, animations play
-     exit   →  remove `is-revealed`, animation state resets so the
-               next entry plays the reveal again
+   Behaviour:
+     first entry  →  add `is-revealed`, animations play, observer
+                     unhooks the element so the reveal never replays
+     re-entry     →  no-op (the testimonials gallery has its own
+                     replay loop in testimonials.js — this file is
+                     strictly one-shot)
    ============================================================ */
 
 (function () {
@@ -72,6 +74,17 @@
     // Buttons: gentle fade-up with stagger.
     document.querySelectorAll('main .btn, main a.link-arrow, main .ctas a').forEach(el => {
       if (el.dataset.reveal) return;
+      el.dataset.reveal = 'fade';
+    });
+    // Animated icons: fade in like the other reveals so they join the
+    // cascade. Skip icons that already live inside another reveal
+    // element (eyebrows, leads etc.) — those would double-animate.
+    // This block runs LAST so the closest-ancestor check sees the
+    // tagging applied above.
+    document.querySelectorAll('main .ai-icon').forEach(el => {
+      if (el.dataset.reveal) return;
+      const ancestor = el.parentElement && el.parentElement.closest('[data-reveal]');
+      if (ancestor) return;
       el.dataset.reveal = 'fade';
     });
   }
@@ -203,18 +216,19 @@
   }
 
   // ----------------------------------------------------------------
-  // 3) INTERSECTION OBSERVER — replays on every entry
+  // 3) INTERSECTION OBSERVER — plays ONCE per element
+  //    First time an element crosses IO_ENTER we add `is-revealed`
+  //    and stop observing it. The reveal never replays on re-entry.
+  //    The testimonials gallery handles its own scatter replay in
+  //    testimonials.js, so this strict one-shot behaviour is what
+  //    the rest of the site uses.
   // ----------------------------------------------------------------
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       const el = e.target;
       if (e.isIntersecting && e.intersectionRatio > IO_ENTER) {
-        // Force a reflow before re-adding so the transition restarts cleanly.
-        el.classList.remove('is-revealed');
-        void el.offsetWidth;
         el.classList.add('is-revealed');
-      } else if (!e.isIntersecting) {
-        el.classList.remove('is-revealed');
+        io.unobserve(el);
       }
     });
   }, { threshold: [0, IO_ENTER, 0.5] });
@@ -261,25 +275,34 @@
   function sequenceGrids() {
     GRID_SELECTORS.forEach(selector => {
       document.querySelectorAll(selector).forEach(grid => {
-        // Running step count across every reveal in this grid. Each new
-        // cell's first reveal sits SEQ_STEP after the previous cell's
-        // last reveal start — fast cascade, no long waits.
-        let cumulativeIdx = 0;
+        // Walk every reveal inside the grid in DOM order — icon → title →
+        // paragraph inside each cell, then on to the next cell — and
+        // overwrite the sibling-based --seq-offset that sequenceContent
+        // computed. The deep walk catches reveals that sibling-walking
+        // misses (e.g. an .ai-icon inside .pgm inside .body inside a
+        // .service-card has no sibling reveal at any level).
+        let runningOffset = 0;
+        let lastType = null;
+        let firstAssigned = false;
         Array.from(grid.children).forEach(cell => {
           const reveals = cell.querySelectorAll('[data-reveal]');
           if (reveals.length === 0) return;
-
-          // Shift every reveal inside the cell by cumulativeIdx * SEQ_STEP
-          // on top of whatever sibling offset it already had.
-          const baseShift = cumulativeIdx * SEQ_STEP;
-          reveals.forEach(el => {
-            const localOffset = parseFloat(el.style.getPropertyValue('--seq-offset')) || 0;
-            el.style.setProperty('--seq-offset', (localOffset + baseShift) + 'ms');
+          reveals.forEach((el, idxInCell) => {
+            const type = el.dataset.reveal;
+            if (!firstAssigned) {
+              runningOffset = 0;
+              firstAssigned = true;
+            } else {
+              // Two consecutive paragraph reveals inside the same cell
+              // get the larger PARA_STEP so they read top-to-bottom.
+              // Cross-cell jumps and everything else use SEQ_STEP for
+              // a snappy cascade.
+              const sameWordsToWords = (idxInCell > 0 && type === 'words' && lastType === 'words');
+              runningOffset += sameWordsToWords ? PARA_STEP : SEQ_STEP;
+            }
+            el.style.setProperty('--seq-offset', runningOffset + 'ms');
+            lastType = type;
           });
-
-          // Reserve one step per reveal so the next cell continues the
-          // cascade smoothly across the boundary.
-          cumulativeIdx += reveals.length;
         });
       });
     });
