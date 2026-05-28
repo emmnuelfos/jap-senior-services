@@ -2,7 +2,11 @@
    J.A.P Senior Services — Animated Icon loader
    Reads <span class="ai-icon" data-icon="<name>" data-loop="false">
    elements, fetches the matching Lottie JSON from assets/icons/<name>.json,
-   and plays each animation when its container enters the viewport.
+   and plays each animation only when the icon is in the viewport.
+
+   Loop behaviour: loop is the DEFAULT. Each cycle finishes, the icon
+   pauses for 2 seconds, then plays again. Opt-out per icon with
+   `data-loop="false"` to play once. Off-screen icons are always paused.
 
    Uses the lottie-web library (loaded once from CDN).
    ============================================================ */
@@ -12,6 +16,8 @@
 
   const ICON_DIR = 'assets/icons/';
   const LOTTIE_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie_light.min.js';
+  const LOOP_PAUSE_MS = 2000;   // gap between loops
+  const IO_THRESHOLD = 0.2;
 
   // Cache JSON across multiple instances of the same icon.
   const jsonCache = Object.create(null);
@@ -37,6 +43,18 @@
     return lottiePromise;
   }
 
+  // Schedule the next play cycle after a pause, but only if we're still
+  // intersecting and the user hasn't opted out.
+  function scheduleNextLoop(el) {
+    if (!el.__anim || !el.__inView) return;
+    clearTimeout(el.__loopTimer);
+    el.__loopTimer = setTimeout(() => {
+      if (el.__anim && el.__inView) {
+        el.__anim.goToAndPlay(0, true);
+      }
+    }, LOOP_PAUSE_MS);
+  }
+
   // Mount one icon container.
   async function mount(el) {
     if (el.dataset.mounted === '1') return;
@@ -54,8 +72,7 @@
     el.style.flex = '0 0 auto';
     el.style.overflow = 'hidden';
 
-    // Loop is the default — opt out per-icon with data-loop="false".
-    const loop = el.hasAttribute('data-loop') ? el.getAttribute('data-loop') !== 'false' : true;
+    const loopOff = el.getAttribute('data-loop') === 'false';
     const speed = parseFloat(el.getAttribute('data-speed') || '1');
 
     const [lottie, data] = await Promise.all([loadLottie(), loadJson(name)]).catch(e => {
@@ -64,50 +81,59 @@
     });
     if (!lottie || !data) return;
 
+    // We control looping manually via the 'complete' event so we can insert
+    // a fixed pause between cycles. Lottie's own `loop:true` plays without
+    // a gap, which is the behaviour we want to avoid.
     const anim = lottie.loadAnimation({
       container: el,
       renderer: 'svg',
-      loop: loop,
+      loop: false,
       autoplay: false,
       animationData: data,
-      rendererSettings: {
-        preserveAspectRatio: 'xMidYMid meet',
-      },
+      rendererSettings: { preserveAspectRatio: 'xMidYMid meet' },
     });
     anim.setSpeed(speed);
 
-    // Save handle for the IO observer.
     el.__anim = anim;
+    el.__inView = false;
     el.__hasPlayed = false;
+
+    if (!loopOff) {
+      anim.addEventListener('complete', () => scheduleNextLoop(el));
+    }
   }
 
-  // Single IntersectionObserver triggers play on viewport entry.
+  // Single IntersectionObserver gates ALL animations: play on enter, pause
+  // (and cancel the loop timer) on exit. Nothing animates off-screen.
   const io = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
     for (const e of entries) {
       const el = e.target;
       if (!el.__anim) continue;
-      if (e.isIntersecting && e.intersectionRatio > 0.15) {
-        // Loop is the default; only true `data-loop="false"` plays once.
-        const loopOff = el.getAttribute('data-loop') === 'false';
+      const visible = e.isIntersecting && e.intersectionRatio > IO_THRESHOLD;
+      el.__inView = visible;
+      const loopOff = el.getAttribute('data-loop') === 'false';
+      if (visible) {
         if (!el.__hasPlayed || !loopOff) {
           el.__anim.goToAndPlay(0, true);
           el.__hasPlayed = true;
         }
-      } else if (!e.isIntersecting) {
-        // Pause when off-screen so we're not wasting CPU.
-        if (el.__anim && el.__anim.isPaused === false) el.__anim.pause();
+      } else {
+        // Off-screen: stop both the current playback and the pending loop.
+        clearTimeout(el.__loopTimer);
+        if (el.__anim && !el.__anim.isPaused) el.__anim.pause();
       }
     }
-  }, { threshold: [0, 0.15, 0.5] }) : null;
+  }, { threshold: [0, IO_THRESHOLD, 0.5] }) : null;
 
-  // Hover trigger — replay on hover regardless of loop setting.
+  // Hover trigger — replay on hover regardless of pause state.
   function attachHover(el) {
     el.addEventListener('mouseenter', () => {
-      if (el.__anim) el.__anim.goToAndPlay(0, true);
+      if (!el.__anim) return;
+      clearTimeout(el.__loopTimer);
+      el.__anim.goToAndPlay(0, true);
     });
   }
 
-  // Boot every existing element + watch for any added later.
   async function bootAll() {
     const els = Array.from(document.querySelectorAll('.ai-icon[data-icon]'));
     await Promise.all(els.map(mount));
@@ -121,7 +147,7 @@
     bootAll();
   }
 
-  // Expose for any future dynamic injection.
+  // Expose for any dynamic injection.
   window.JAP_mountIcon = async function (el) {
     await mount(el);
     if (io) io.observe(el);

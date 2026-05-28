@@ -167,15 +167,28 @@
   function jump(i) { activeIdx = i; update(); }
 
   // ---------- ENTRANCE ----------
+  // Replays every time the section re-enters the viewport. When the user
+  // scrolls past and comes back, the cards fly in fresh from their scatter
+  // positions — same effect as the first visit.
+  let entryTimer = null;
   const entryIO = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      root.classList.add('is-entering', 'is-entered');
-      entryIO.disconnect();
-      const total = cards.length * STAGGER_MS + 1500;
-      setTimeout(() => root.classList.remove('is-entering'), total);
+      if (e.isIntersecting && e.intersectionRatio > ENTRY_THRESHOLD) {
+        // Cancel any pending tail-off from a previous trip.
+        clearTimeout(entryTimer);
+        // Force a CSS reflow so the entry transition restarts cleanly.
+        root.classList.remove('is-entered', 'is-entering');
+        void root.offsetWidth;
+        root.classList.add('is-entering', 'is-entered');
+        const total = cards.length * STAGGER_MS + 1500;
+        entryTimer = setTimeout(() => root.classList.remove('is-entering'), total);
+      } else if (!e.isIntersecting) {
+        // Reset so the next entry plays the staggered fly-in again.
+        clearTimeout(entryTimer);
+        root.classList.remove('is-entered', 'is-entering');
+      }
     });
-  }, { threshold: ENTRY_THRESHOLD });
+  }, { threshold: [0, ENTRY_THRESHOLD, 0.5] });
   entryIO.observe(root);
 
   // ---------- DRAG / SWIPE ----------

@@ -287,4 +287,41 @@
     });
   });
 
+  /* ---------- HERO MOUSE PARALLAX ----------
+     Any element with [data-hero-parallax] gets --mx / --my custom
+     properties on its descendants based on mouse position relative to
+     its bounding box. Each axis is normalised to -1..1. CSS reads those
+     values to translate the inner image. We freeze updates while the
+     page is scrolling so the wheel never fights the image transform. */
+  (function () {
+    const stages = Array.from(document.querySelectorAll('[data-hero-parallax]'));
+    if (!stages.length) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let scrolling = false, scrollClear;
+    addEventListener('scroll', () => {
+      scrolling = true;
+      clearTimeout(scrollClear);
+      scrollClear = setTimeout(() => { scrolling = false; }, 120);
+    }, { passive: true });
+
+    function setVars(stage, mx, my) {
+      stage.style.setProperty('--mx', mx.toFixed(3));
+      stage.style.setProperty('--my', my.toFixed(3));
+    }
+
+    stages.forEach(stage => {
+      stage.addEventListener('pointermove', (e) => {
+        if (scrolling) return;
+        const r = stage.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        // -1..1 with (0,0) at the centre.
+        const mx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+        const my = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+        setVars(stage, mx, my);
+      });
+      stage.addEventListener('pointerleave', () => setVars(stage, 0, 0));
+    });
+  })();
+
 })();
