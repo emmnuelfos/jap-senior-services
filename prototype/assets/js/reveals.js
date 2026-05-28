@@ -231,31 +231,11 @@
   // animation duration). The matching CSS rules add that offset on top
   // of any per-letter / per-word stagger.
   //
-  // Timing constants below must stay in sync with the CSS values for
-  // [data-reveal="letters"], [data-reveal="words"], [data-reveal="fade"]
-  // and [data-reveal="slide"]. If one changes, update the other.
-  const LETTER_STAGGER  = 28;
-  const LETTER_DURATION = 720;
-  const WORD_STAGGER    = 72;
-  const WORD_DURATION   = 1400;
-  const FADE_DURATION   = 900;
-  const SLIDE_DURATION  = 900;
-  const IMAGE_DURATION  = 1200;
-
-  function fullDuration(el) {
-    const type = el.dataset.reveal;
-    if (type === 'letters') {
-      const n = el.querySelectorAll('.rv-letter').length;
-      return Math.max(0, n - 1) * LETTER_STAGGER + LETTER_DURATION;
-    }
-    if (type === 'words') {
-      const n = el.querySelectorAll('.rv-word').length;
-      return Math.max(0, n - 1) * WORD_STAGGER + WORD_DURATION;
-    }
-    if (type === 'image') return IMAGE_DURATION;
-    if (type === 'slide') return SLIDE_DURATION;
-    return FADE_DURATION;
-  }
+  // Fixed step between consecutive reveal elements. We do NOT wait for
+  // one element's full duration to complete before starting the next —
+  // each element fires SEQ_STEP after the previous one starts, so the
+  // cascade overlaps and finishes quickly. Premium feel without dragging.
+  const SEQ_STEP = 150;
 
   // Grid containers: chain each child cell's reveal start time so cell 2
   // begins where cell 1's internal animation finished, cell 3 after cell 2,
@@ -276,28 +256,25 @@
   function sequenceGrids() {
     GRID_SELECTORS.forEach(selector => {
       document.querySelectorAll(selector).forEach(grid => {
-        let cellOffset = 0;
+        // Running step count across every reveal in this grid. Each new
+        // cell's first reveal sits SEQ_STEP after the previous cell's
+        // last reveal start — fast cascade, no long waits.
+        let cumulativeIdx = 0;
         Array.from(grid.children).forEach(cell => {
           const reveals = cell.querySelectorAll('[data-reveal]');
           if (reveals.length === 0) return;
 
-          // First compute the cell's internal end time using whatever
-          // sibling-chain offsets sequenceContent() already assigned.
-          let cellEnd = 0;
+          // Shift every reveal inside the cell by cumulativeIdx * SEQ_STEP
+          // on top of whatever sibling offset it already had.
+          const baseShift = cumulativeIdx * SEQ_STEP;
           reveals.forEach(el => {
             const localOffset = parseFloat(el.style.getPropertyValue('--seq-offset')) || 0;
-            const end = localOffset + fullDuration(el);
-            if (end > cellEnd) cellEnd = end;
+            el.style.setProperty('--seq-offset', (localOffset + baseShift) + 'ms');
           });
 
-          // Then shift every reveal inside the cell by the cumulative
-          // cellOffset so cell N starts when cell N-1's content ended.
-          reveals.forEach(el => {
-            const localOffset = parseFloat(el.style.getPropertyValue('--seq-offset')) || 0;
-            el.style.setProperty('--seq-offset', (localOffset + cellOffset) + 'ms');
-          });
-
-          cellOffset += cellEnd;
+          // Reserve one step per reveal so the next cell continues the
+          // cascade smoothly across the boundary.
+          cumulativeIdx += reveals.length;
         });
       });
     });
@@ -319,20 +296,17 @@
       const prevType = prev.dataset.reveal;
       const prevOffset = parseFloat(prev.style.getPropertyValue('--seq-offset')) || 0;
 
-      // Special case: two consecutive paragraphs share the same offset.
-      // The second one starts at the same moment as the first instead of
-      // waiting for it to finish — its own internal per-word stagger is
-      // enough motion; piling another wait on top makes long sections
-      // feel sluggish (the About Us section was the obvious offender).
+      // Two consecutive paragraphs share the same offset (parallel, no
+      // extra step). The per-word stagger inside each one is enough.
       if (type === 'words' && prevType === 'words') {
         el.style.setProperty('--seq-offset', prevOffset + 'ms');
         return;
       }
 
-      // Otherwise chain normally: this element starts when the previous
-      // sibling's animation has fully completed. That keeps titles and
-      // titles+paragraphs flowing in clear DOM hierarchy (top to bottom).
-      el.style.setProperty('--seq-offset', (prevOffset + fullDuration(prev)) + 'ms');
+      // Otherwise: this element starts SEQ_STEP after the previous one
+      // STARTED — not after it finished. Cascade overlaps so the order
+      // reads top-to-bottom without dragging.
+      el.style.setProperty('--seq-offset', (prevOffset + SEQ_STEP) + 'ms');
     });
   }
 
