@@ -1408,25 +1408,19 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 }
 
 /* ----- 1b. PER-WORD PARAGRAPH (default for body copy) -----
-   Each word slides up with a soft blur drop, staggered by absolute
-   word index. The blur trails off as the word settles, giving a
-   premium, slightly cinematic feel without altering rest state. */
+   Pure opacity fade — no blur, no transform. Each word eases from
+   0 → 1 over a long duration with a generous per-word stagger so
+   the whole paragraph resolves at a slow, elegant pace and the
+   rest state is byte-identical to the source markup. */
 [data-reveal="words"] .rv-word {
   display: inline-block;
   opacity: 0;
-  transform: translateY(22px);
-  filter: blur(6px);
-  transition:
-    opacity   720ms var(--rv-ease-out),
-    transform 820ms var(--rv-ease),
-    filter    640ms ease-out;
-  transition-delay: calc(var(--word-i, 0) * 36ms);
-  will-change: opacity, transform, filter;
+  transition: opacity 1400ms ease-out;
+  transition-delay: calc(var(--word-i, 0) * 72ms);
+  will-change: opacity;
 }
 [data-reveal="words"].is-revealed .rv-word {
   opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
 }
 
 /* ----- 2. FADE-UP (default fallback) ----- */
