@@ -257,6 +257,52 @@
     return FADE_DURATION;
   }
 
+  // Grid containers: chain each child cell's reveal start time so cell 2
+  // begins where cell 1's internal animation finished, cell 3 after cell 2,
+  // and so on. The numbered storyboard the client supplied (1→11 across
+  // hero + value strip) is this exact behaviour applied to every grid.
+  const GRID_SELECTORS = [
+    '.value-strip',         // homepage 4-cell social proof
+    '.service-grid',        // homepage 6 program cards
+    '.stats-band-grid',     // stats break — 4 stats cells
+    '.step-ribbon',         // how-it-works — 3 numbered steps
+    '.timeline',            // how-it-works page — 4 timeline steps
+    '.stories-2up',         // legacy two-up testimonial layout
+    '.split-story',         // story-preview split (photo + copy)
+    '.principles',          // deck principles grid
+    '.cta-band-grid'        // CTA band (copy + photo)
+  ];
+
+  function sequenceGrids() {
+    GRID_SELECTORS.forEach(selector => {
+      document.querySelectorAll(selector).forEach(grid => {
+        let cellOffset = 0;
+        Array.from(grid.children).forEach(cell => {
+          const reveals = cell.querySelectorAll('[data-reveal]');
+          if (reveals.length === 0) return;
+
+          // First compute the cell's internal end time using whatever
+          // sibling-chain offsets sequenceContent() already assigned.
+          let cellEnd = 0;
+          reveals.forEach(el => {
+            const localOffset = parseFloat(el.style.getPropertyValue('--seq-offset')) || 0;
+            const end = localOffset + fullDuration(el);
+            if (end > cellEnd) cellEnd = end;
+          });
+
+          // Then shift every reveal inside the cell by the cumulative
+          // cellOffset so cell N starts when cell N-1's content ended.
+          reveals.forEach(el => {
+            const localOffset = parseFloat(el.style.getPropertyValue('--seq-offset')) || 0;
+            el.style.setProperty('--seq-offset', (localOffset + cellOffset) + 'ms');
+          });
+
+          cellOffset += cellEnd;
+        });
+      });
+    });
+  }
+
   function sequenceContent() {
     document.querySelectorAll('[data-reveal]').forEach(el => {
       // Walk backwards through siblings to find the nearest previous
@@ -296,6 +342,7 @@
     document.querySelectorAll('[data-reveal="letters"]').forEach(splitLetters);
     document.querySelectorAll('[data-reveal="words"]').forEach(splitWords);
     sequenceContent();
+    sequenceGrids();
     document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
   }
 
@@ -325,6 +372,7 @@
       document.querySelectorAll('[data-reveal="lines"]').forEach(splitLines);
       // Re-sequencing is cheap — keep it in sync in case content changed.
       sequenceContent();
+      sequenceGrids();
     }, RESPLIT_DEBOUNCE);
   });
 
