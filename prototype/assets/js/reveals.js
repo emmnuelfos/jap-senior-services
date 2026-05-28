@@ -205,29 +205,55 @@
   //    Wait for fonts to load before splitting so line measurements
   //    are correct. Then auto-tag, split, observe.
   // ----------------------------------------------------------------
-  // Sequence consecutive sibling paragraphs so the next one only starts
-  // when the previous one has finished. We process paragraphs in DOM
-  // order — each gets a --para-offset that equals the previous sibling's
-  // (offset + duration). CSS applies that offset on top of the per-word
-  // stagger, so the chain plays back-to-back.
-  function sequenceParagraphs() {
-    const PARA_STAGGER = 72;   // matches the value used in the CSS rule
-    const PARA_DURATION = 1400;
-    document.querySelectorAll('[data-reveal="words"]').forEach(para => {
-      // Find the immediately previous *sibling* paragraph that also has
-      // the word reveal. We only chain siblings — paragraphs in different
-      // parents stay independent.
-      let prev = para.previousElementSibling;
-      while (prev && !prev.matches('[data-reveal="words"]')) {
+  // Sequence consecutive sibling reveal elements (titles, paragraphs,
+  // eyebrows, buttons) so they play one after the other inside a section
+  // instead of all firing simultaneously. Each element gets a
+  // --seq-offset that equals the previous sibling's (offset + its full
+  // animation duration). The matching CSS rules add that offset on top
+  // of any per-letter / per-word stagger.
+  //
+  // Timing constants below must stay in sync with the CSS values for
+  // [data-reveal="letters"], [data-reveal="words"], [data-reveal="fade"]
+  // and [data-reveal="slide"]. If one changes, update the other.
+  const LETTER_STAGGER  = 28;
+  const LETTER_DURATION = 720;
+  const WORD_STAGGER    = 72;
+  const WORD_DURATION   = 1400;
+  const FADE_DURATION   = 900;
+  const SLIDE_DURATION  = 900;
+  const IMAGE_DURATION  = 1200;
+
+  function fullDuration(el) {
+    const type = el.dataset.reveal;
+    if (type === 'letters') {
+      const n = el.querySelectorAll('.rv-letter').length;
+      return Math.max(0, n - 1) * LETTER_STAGGER + LETTER_DURATION;
+    }
+    if (type === 'words') {
+      const n = el.querySelectorAll('.rv-word').length;
+      return Math.max(0, n - 1) * WORD_STAGGER + WORD_DURATION;
+    }
+    if (type === 'image') return IMAGE_DURATION;
+    if (type === 'slide') return SLIDE_DURATION;
+    return FADE_DURATION;
+  }
+
+  function sequenceContent() {
+    document.querySelectorAll('[data-reveal]').forEach(el => {
+      // Walk backwards through siblings to find the nearest previous
+      // element that also has a reveal. Only chain siblings — elements
+      // in different parents stay independent, so each container starts
+      // its own chain at offset 0.
+      let prev = el.previousElementSibling;
+      while (prev && !prev.matches('[data-reveal]')) {
         prev = prev.previousElementSibling;
       }
       if (prev) {
-        const prevOffset = parseFloat(prev.style.getPropertyValue('--para-offset')) || 0;
-        const prevWords  = prev.querySelectorAll('.rv-word').length;
-        const prevEnd    = prevOffset + (prevWords - 1) * PARA_STAGGER + PARA_DURATION;
-        para.style.setProperty('--para-offset', prevEnd + 'ms');
+        const prevOffset = parseFloat(prev.style.getPropertyValue('--seq-offset')) || 0;
+        const prevEnd    = prevOffset + fullDuration(prev);
+        el.style.setProperty('--seq-offset', prevEnd + 'ms');
       } else {
-        para.style.setProperty('--para-offset', '0ms');
+        el.style.setProperty('--seq-offset', '0ms');
       }
     });
   }
@@ -237,7 +263,7 @@
     document.querySelectorAll('[data-reveal="lines"]').forEach(splitLines);
     document.querySelectorAll('[data-reveal="letters"]').forEach(splitLetters);
     document.querySelectorAll('[data-reveal="words"]').forEach(splitWords);
-    sequenceParagraphs();
+    sequenceContent();
     document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
   }
 
@@ -266,7 +292,7 @@
       // absolute indices, not measured positions.
       document.querySelectorAll('[data-reveal="lines"]').forEach(splitLines);
       // Re-sequencing is cheap — keep it in sync in case content changed.
-      sequenceParagraphs();
+      sequenceContent();
     }, RESPLIT_DEBOUNCE);
   });
 

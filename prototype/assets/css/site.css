@@ -1396,7 +1396,9 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   transition:
     opacity   620ms var(--rv-ease-out),
     transform 720ms var(--rv-ease);
-  transition-delay: calc(var(--letter-i, 0) * 28ms);
+  /* --seq-offset waits for any previous sibling [data-reveal] to finish
+     so titles in a multi-element section don't show simultaneously. */
+  transition-delay: calc(var(--seq-offset, 0ms) + var(--letter-i, 0) * 28ms);
   will-change: opacity, transform;
   /* backface hidden prevents an awkward gray sliver during the flip */
   backface-visibility: hidden;
@@ -1416,10 +1418,10 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   display: inline-block;
   opacity: 0;
   transition: opacity 1400ms ease-out;
-  /* --para-offset is set by reveals.js so each sibling paragraph begins
-     where the previous one finished. First paragraph in a group has
-     offset 0, so it starts immediately. */
-  transition-delay: calc(var(--para-offset, 0ms) + var(--word-i, 0) * 72ms);
+  /* --seq-offset is set by reveals.js so each sibling element waits for
+     the previous one to finish — including titles, fades and other
+     paragraphs upstream — before the first word starts fading in. */
+  transition-delay: calc(var(--seq-offset, 0ms) + var(--word-i, 0) * 72ms);
   will-change: opacity;
 }
 [data-reveal="words"].is-revealed .rv-word {
@@ -1433,7 +1435,9 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   transition:
     opacity   720ms var(--rv-ease-out),
     transform 900ms var(--rv-ease);
-  transition-delay: var(--rv-delay, 0ms);
+  /* --seq-offset is set by reveals.js so this element waits for any
+     previous sibling [data-reveal] to finish before starting. */
+  transition-delay: calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms));
   will-change: transform, opacity;
 }
 [data-reveal="fade"].is-revealed {
