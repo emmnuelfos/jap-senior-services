@@ -1452,22 +1452,30 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   transition-delay: calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms));
 }
 
-/* ----- 3. IMAGE — opacity fade reveal -----
-   Previously a clip-path wipe, but more-specific element rules
-   (e.g. `.service-card .photo img`) replaced the transition
-   shorthand and dropped clip-path, so the mask snapped instantly
-   and the parent's placeholder colour showed through. Pure opacity
-   is robust against shorthand-replacement: even when a downstream
-   rule wins, we add an `opacity` entry to that rule so the cascade
-   delay survives. No transform here so we don't fight the card
-   hover scale. */
+/* ----- 3. IMAGE — clip-path swipe reveal -----
+   Left-to-right clip-mask wipe + a gentle scale-down for a Ken Burns
+   feel. The transition is on the .is-revealed rule (matching the
+   pattern used for fade / slide) so adding data-reveal at runtime
+   snaps to the hidden state without animating in. Anywhere a
+   downstream rule overrides the transition shorthand (e.g.
+   `.service-card .photo img`), that rule MUST include a `clip-path`
+   entry of its own — otherwise the shorthand replaces this list and
+   the mask snaps open with no animation. The .service-card rule
+   below does exactly that. */
 [data-reveal="image"] {
-  opacity: 0;
-  will-change: opacity;
+  clip-path: inset(0 100% 0 0);
+  -webkit-clip-path: inset(0 100% 0 0);
+  transform: scale(1.05);
+  will-change: clip-path, transform;
 }
 [data-reveal="image"].is-revealed {
-  opacity: 1;
-  transition: opacity 900ms var(--rv-ease-out);
+  clip-path: inset(0 0 0 0);
+  -webkit-clip-path: inset(0 0 0 0);
+  transform: scale(1);
+  transition:
+    clip-path 1200ms var(--rv-ease),
+    -webkit-clip-path 1200ms var(--rv-ease),
+    transform 1400ms var(--rv-ease-out);
   transition-delay: calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms));
 }
 
@@ -1552,15 +1560,18 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
 /* Service card hover refinement */
 .service-card { transition: transform 380ms var(--rv-ease-out), border-color 380ms var(--rv-ease-out), box-shadow 380ms var(--rv-ease-out); }
 .service-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(45, 90, 145, 0.10); }
-/* Per-property transitions: opacity carries the reveal cascade delay so
-   each card photo fades in at its own slot, while transform and filter
-   stay snappy with no delay so the hover scale + brightness lift kicks
-   in immediately when the cursor lands. */
+/* Per-property transitions: clip-path carries the reveal cascade delay
+   so each card photo swipes open at its own slot, while transform and
+   filter stay snappy with no delay so the hover scale + brightness
+   lift kicks in immediately when the cursor lands. Without explicit
+   clip-path entries here, the transition shorthand would drop them
+   and the mask would snap open instantly. */
 .service-card .photo img {
   transition:
-    opacity   900ms var(--rv-ease-out) calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms)),
-    transform 800ms var(--rv-ease-out),
-    filter    800ms var(--rv-ease-out);
+    clip-path         1200ms var(--rv-ease) calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms)),
+    -webkit-clip-path 1200ms var(--rv-ease) calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms)),
+    transform         800ms  var(--rv-ease-out),
+    filter            800ms  var(--rv-ease-out);
 }
 .service-card:hover .photo img { transform: scale(1.05); filter: brightness(1.04) saturate(1.06); }
 
