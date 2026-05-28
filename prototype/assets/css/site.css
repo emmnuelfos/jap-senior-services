@@ -1345,6 +1345,289 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   #tweaks-toggle { right: 16px; bottom: calc(64px + 16px); padding: 10px 14px; font-size: 11px; }
 }
 
+/* ============================================================
+   SCATTERED TESTIMONIAL GALLERY
+   Cards with a client photo background and a navy brand gradient
+   at the bottom holding the quote + attribution.
+   ============================================================ */
+.jap-scat {
+  --jap-card-w:   320px;
+  --jap-card-h:   440px;
+  --jap-card-gap: 22px;
+  --jap-enter-dur: 1.2s;
+  --jap-ease:     cubic-bezier(.65, .02, .2, 1);
+
+  position: relative;
+  width: 100%;
+  height: clamp(580px, 80vh, 760px);
+  background: var(--ivory);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Stage + sliding track */
+.jap-scat__stage {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  perspective: 1200px;
+}
+.jap-scat__track {
+  display: flex; align-items: center;
+  transform: translateX(var(--jap-off, 0px));
+  transition: transform 1s var(--jap-ease);
+  will-change: transform;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.jap-scat.is-dragging .jap-scat__track { cursor: grabbing; transition: none; }
+.jap-scat.is-dragging .jap-scat__card  { transition: none; }
+
+/* ---------- CARD ---------- */
+.jap-scat__card {
+  flex: 0 0 auto;
+  width: var(--jap-card-w);
+  height: var(--jap-card-h);
+  margin: 0 calc(var(--jap-card-gap) / 2);
+  background: var(--forest-900);
+  border: 1px solid rgba(45, 90, 145, 0.18);
+  border-radius: 4px;
+  box-shadow: 0 18px 40px rgba(15, 30, 60, .18);
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+
+  /* Entry state (off-stage scatter) */
+  opacity: 0;
+  transform: translate(var(--jap-enter-x, 0px), var(--jap-enter-y, 0px))
+             rotate(var(--jap-enter-r, 0deg))
+             scale(var(--jap-enter-s, .9));
+  filter: blur(8px);
+
+  transition: transform var(--jap-enter-dur) var(--jap-ease),
+              opacity   .9s var(--jap-ease),
+              filter    .9s var(--jap-ease),
+              box-shadow .5s var(--jap-ease);
+  will-change: transform, opacity, filter;
+  outline: none;
+}
+.jap-scat__card:focus-visible {
+  box-shadow: 0 0 0 3px var(--brass), 0 18px 40px rgba(15,30,60,.22);
+}
+.jap-scat.is-dragging .jap-scat__card { cursor: grabbing; }
+
+/* Resting state — slight scatter (rotation + y-offset) per card */
+.jap-scat.is-entered .jap-scat__card {
+  opacity: 1;
+  filter: none;
+  transform: rotate(var(--jap-rot, 0deg)) translateY(var(--jap-ty, 0px));
+  transition-duration: .7s, .9s, .9s, .5s;
+}
+.jap-scat.is-entering .jap-scat__card {
+  transition-duration: var(--jap-enter-dur), .9s, .9s, .5s;
+  transition-delay: calc(var(--jap-i, 0) * 80ms);
+  pointer-events: none;
+}
+
+/* Active centered card — straightens, lifts forward */
+.jap-scat.is-entered .jap-scat__card.is-active {
+  transform: rotate(0deg) translateY(-6px) scale(1.04);
+  z-index: 3;
+  box-shadow: 0 28px 60px rgba(15, 30, 60, .28);
+}
+
+/* Hover — only when idle */
+.jap-scat.is-entered:not(.is-dragging) .jap-scat__card:not(.is-active):hover {
+  transform: rotate(calc(var(--jap-rot, 0deg) * 0.3))
+             translateY(calc(var(--jap-ty, 0px) - 14px))
+             scale(1.05);
+  box-shadow: 0 28px 55px rgba(15, 30, 60, .26);
+  z-index: 4;
+}
+.jap-scat.is-entered:not(.is-dragging) .jap-scat__card.is-active:hover {
+  transform: rotate(0deg) translateY(-12px) scale(1.05);
+}
+.jap-scat.is-entered:not(.is-dragging) .jap-scat__card:hover .jap-scat__photo {
+  transform: scale(1.06);
+}
+
+/* Card photo */
+.jap-scat__photo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+  transition: transform 1s var(--jap-ease);
+}
+
+/* ---------- BOTTOM GRADIENT OVERLAY ---------- */
+.jap-scat__overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 24px 24px 22px;
+  color: var(--ivory);
+  /* JAP Navy gradient — fades from transparent through navy-800 to deep navy */
+  background: linear-gradient(180deg,
+    rgba(45, 90, 145, 0)   0%,
+    rgba(45, 90, 145, 0.35) 22%,
+    rgba(31, 66, 117, 0.85) 55%,
+    rgba(21, 49, 90, 0.96) 100%);
+  pointer-events: none;
+}
+
+.jap-scat__tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass-100);
+  background: rgba(184, 118, 62, 0.16);
+  border: 1px solid rgba(234, 210, 176, 0.4);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.jap-scat__quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.45;
+  color: rgba(245, 241, 234, 0.96);
+  margin: 0 0 14px;
+  position: relative;
+  /* Clamp to 5 lines so card footer stays clean across quote lengths */
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.jap-scat__qmark {
+  color: var(--brass);
+  font-size: 28px;
+  font-weight: 500;
+  font-style: normal;
+  margin-right: 4px;
+  vertical-align: -6px;
+  line-height: 0;
+}
+
+.jap-scat__attrib {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(245, 241, 234, 0.18);
+}
+.jap-scat__who {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--ivory);
+  letter-spacing: 0.01em;
+}
+.jap-scat__where {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass-100);
+}
+
+/* ---------- NAV ARROWS ---------- */
+.jap-scat__nav {
+  position: absolute; top: 50%;
+  transform: translateY(-50%);
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 1px solid var(--stone-200);
+  background: var(--ivory);
+  color: var(--forest);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 7;
+  box-shadow: 0 6px 20px rgba(45, 90, 145, .14);
+  opacity: 0;
+  transition: background .35s var(--jap-ease),
+              border-color .35s var(--jap-ease),
+              transform .35s var(--jap-ease),
+              color .35s var(--jap-ease),
+              opacity .5s var(--jap-ease) .4s,
+              box-shadow .35s var(--jap-ease);
+}
+.jap-scat.is-entered .jap-scat__nav { opacity: 1; }
+.jap-scat__nav:hover {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--ivory);
+  box-shadow: 0 10px 24px rgba(45, 90, 145, .28);
+}
+.jap-scat__nav--prev { left: 40px; }
+.jap-scat__nav--next { right: 40px; }
+.jap-scat__nav--prev:hover { transform: translateY(-50%) translateX(-3px); }
+.jap-scat__nav--next:hover { transform: translateY(-50%) translateX(3px); }
+.jap-scat__nav:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+/* ---------- COUNTER (bottom center) ---------- */
+.jap-scat__counter {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: var(--stone);
+  font-variant-numeric: tabular-nums;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity .6s var(--jap-ease) .3s;
+}
+.jap-scat.is-entered .jap-scat__counter { opacity: 1; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+  .jap-scat {
+    --jap-card-w: 260px;
+    --jap-card-h: 380px;
+    --jap-card-gap: 16px;
+    height: clamp(540px, 76vh, 680px);
+  }
+  .jap-scat__nav { width: 50px; height: 50px; }
+  .jap-scat__nav--prev { left: 16px; }
+  .jap-scat__nav--next { right: 16px; }
+  .jap-scat__quote { font-size: 14px; -webkit-line-clamp: 6; }
+}
+@media (max-width: 540px) {
+  .jap-scat {
+    --jap-card-w: 78vw;
+    --jap-card-h: 64vh;
+  }
+  .jap-scat__overlay { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jap-scat, .jap-scat__card, .jap-scat__track,
+  .jap-scat__nav, .jap-scat__photo, .jap-scat__counter {
+    transition: none !important;
+    filter: none !important;
+  }
+  .jap-scat__card {
+    opacity: 1;
+    transform: rotate(var(--jap-rot)) translateY(var(--jap-ty));
+  }
+}
+
 /* ---------- 19. PAGE HERO (internal pages) ---------- */
 .page-hero {
   position: relative;
