@@ -1286,6 +1286,26 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 .trust-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 .trust-cell .ai-icon { margin-bottom: 4px; }
 
+/* Eyebrow with leading icon */
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; }
+.eyebrow .ai-icon { display: inline-flex !important; }
+
+/* How-it-works step icon (on Forest background) */
+.step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px; height: 48px;
+  background: rgba(245, 241, 234, 0.06);
+  border: 1px solid rgba(245, 241, 234, 0.18);
+  border-radius: 50%;
+  margin-bottom: 18px;
+}
+.step-icon .ai-icon { filter: brightness(0) invert(1) opacity(0.9); }
+
+/* Testimonial tag pill: brass star + label inline */
+.testimonial .tag { display: inline-flex; align-items: center; gap: 6px; }
+
 /* Floating Tweaks toggle button */
 #tweaks-toggle {
   position: fixed;

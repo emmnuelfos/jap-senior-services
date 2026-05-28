@@ -54,7 +54,8 @@
     el.style.flex = '0 0 auto';
     el.style.overflow = 'hidden';
 
-    const loop = el.hasAttribute('data-loop') ? el.getAttribute('data-loop') !== 'false' : false;
+    // Loop is the default — opt out per-icon with data-loop="false".
+    const loop = el.hasAttribute('data-loop') ? el.getAttribute('data-loop') !== 'false' : true;
     const speed = parseFloat(el.getAttribute('data-speed') || '1');
 
     const [lottie, data] = await Promise.all([loadLottie(), loadJson(name)]).catch(e => {
@@ -86,11 +87,15 @@
       const el = e.target;
       if (!el.__anim) continue;
       if (e.isIntersecting && e.intersectionRatio > 0.15) {
-        const loop = el.hasAttribute('data-loop') && el.getAttribute('data-loop') !== 'false';
-        if (!el.__hasPlayed || loop) {
+        // Loop is the default; only true `data-loop="false"` plays once.
+        const loopOff = el.getAttribute('data-loop') === 'false';
+        if (!el.__hasPlayed || !loopOff) {
           el.__anim.goToAndPlay(0, true);
           el.__hasPlayed = true;
         }
+      } else if (!e.isIntersecting) {
+        // Pause when off-screen so we're not wasting CPU.
+        if (el.__anim && el.__anim.isPaused === false) el.__anim.pause();
       }
     }
   }, { threshold: [0, 0.15, 0.5] }) : null;
