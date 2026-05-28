@@ -1472,13 +1472,10 @@ body.cards-photo-left .service-card .body { padding: 24px; }
   clip-path: inset(0 0 0 0);
   -webkit-clip-path: inset(0 0 0 0);
   transform: scale(1);
-  /* Linear timing per client direction — no easing curve on the
-     image entrance. The wipe and the scale-down both progress at a
-     constant rate. */
   transition:
-    clip-path         1200ms linear,
-    -webkit-clip-path 1200ms linear,
-    transform         1400ms linear;
+    clip-path         1200ms var(--rv-ease),
+    -webkit-clip-path 1200ms var(--rv-ease),
+    transform         1400ms var(--rv-ease-out);
   transition-delay: calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms));
 }
 
@@ -1571,8 +1568,8 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
    and the mask would snap open instantly. */
 .service-card .photo img {
   transition:
-    clip-path         1200ms linear calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms)),
-    -webkit-clip-path 1200ms linear calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms)),
+    clip-path         1200ms var(--rv-ease)     calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms)),
+    -webkit-clip-path 1200ms var(--rv-ease)     calc(var(--seq-offset, 0ms) + var(--rv-delay, 0ms)),
     transform         800ms  var(--rv-ease-out),
     filter            800ms  var(--rv-ease-out);
 }
