@@ -272,16 +272,14 @@
   // animation duration). The matching CSS rules add that offset on top
   // of any per-letter / per-word stagger.
   //
-  // Fixed step between consecutive reveal elements.
-  //   SEQ_STEP    — generic cadence between eyebrows / titles / buttons.
-  //                 Tight 150 ms beat keeps the cascade snappy.
-  //   PARA_STEP   — bigger gap when one paragraph follows another, so
-  //                 it visibly reads as "first paragraph plays, then
-  //                 the next". 150 ms was too subtle; 700 ms gives
-  //                 each paragraph room to register before the next
-  //                 kicks in, without dragging to the full ~3 s wait.
-  const SEQ_STEP  = 150;
-  const PARA_STEP = 700;
+  // Fixed step between consecutive reveal elements — every reveal
+  // (icons, titles, paragraphs, buttons) starts 200 ms after the
+  // previous one *started*, not after it finished. Same uniform beat
+  // across the page per client direction, so paragraph-to-paragraph
+  // doesn't pause to wait out the previous paragraph's full word
+  // wave.
+  const SEQ_STEP  = 200;
+  const PARA_STEP = 200;
 
   // Grid containers: chain each child cell's reveal start time so cell 2
   // begins where cell 1's internal animation finished, cell 3 after cell 2,
