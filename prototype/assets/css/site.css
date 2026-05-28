@@ -1364,11 +1364,7 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 /* When reduced-motion is requested OR reveals.js bails, skip everything. */
 .reveals-off [data-reveal] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
 
-/* ----- 1. PER-LINE TEXT ----- */
-[data-reveal="lines"] {
-  /* Overflow hidden creates the "lines slide up from below" feel
-     because each word's parent is its line wrapper visually. */
-}
+/* ----- 1. PER-LINE TEXT (legacy — kept for elements that opt in) ----- */
 [data-reveal="lines"] .rv-word {
   display: inline-block;
   opacity: 0;
@@ -1382,6 +1378,55 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 [data-reveal="lines"].is-revealed .rv-word {
   opacity: 1;
   transform: translateY(0) rotate(0deg);
+}
+
+/* ----- 1a. PER-LETTER TITLE (default for headings) -----
+   Each letter falls in from above with a 3D rotateX flip and a
+   short translate-Y settle. Per-letter stagger via --letter-i.
+   Final rest state is identical to the original markup so the
+   typography is not affected once revealed. */
+[data-reveal="letters"] {
+  perspective: 800px;
+}
+[data-reveal="letters"] .rv-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, -34%, 0) rotateX(-78deg);
+  transform-origin: 50% 100% -8px;
+  transition:
+    opacity   620ms var(--rv-ease-out),
+    transform 720ms var(--rv-ease);
+  transition-delay: calc(var(--letter-i, 0) * 28ms);
+  will-change: opacity, transform;
+  /* backface hidden prevents an awkward gray sliver during the flip */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+[data-reveal="letters"].is-revealed .rv-letter {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotateX(0deg);
+}
+
+/* ----- 1b. PER-WORD PARAGRAPH (default for body copy) -----
+   Each word slides up with a soft blur drop, staggered by absolute
+   word index. The blur trails off as the word settles, giving a
+   premium, slightly cinematic feel without altering rest state. */
+[data-reveal="words"] .rv-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(22px);
+  filter: blur(6px);
+  transition:
+    opacity   720ms var(--rv-ease-out),
+    transform 820ms var(--rv-ease),
+    filter    640ms ease-out;
+  transition-delay: calc(var(--word-i, 0) * 36ms);
+  will-change: opacity, transform, filter;
+}
+[data-reveal="words"].is-revealed .rv-word {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
 }
 
 /* ----- 2. FADE-UP (default fallback) ----- */

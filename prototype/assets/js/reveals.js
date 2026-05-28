@@ -36,20 +36,20 @@
   //    values, unless the author specified one explicitly.
   // ----------------------------------------------------------------
   function autoTag() {
-    // Headings: prefer per-line where the markup is simple text only.
+    // Headings: per-letter fall-in (3D rotateX + translateY + opacity)
+    // with a per-letter stagger. Editorial entrance that doesn't change
+    // the rest state — final type is identical to the original.
     document.querySelectorAll('main h1, main h2, main h3, main .display-l, main .display-xl').forEach(el => {
       if (el.dataset.reveal) return;
-      // Skip if the heading contains complex nested elements that span
-      // multiple writing directions / are hard to measure (em, br, span are fine).
-      el.dataset.reveal = 'lines';
+      el.dataset.reveal = 'letters';
     });
-    // Paragraphs and leads: per-line where short, fade for the long ones.
+    // Paragraphs and leads: per-word wave entrance (slide up + soft
+    // blur drop, staggered by absolute word index). Eyebrows use fade.
     document.querySelectorAll('main p, main .lead, main .sub, main .eyebrow').forEach(el => {
       if (el.dataset.reveal) return;
-      // Skip elements that are part of testimonial cards / footer / nav.
       if (el.closest('.jap-scat__card')) return;
       if (el.closest('.site-footer')) return;
-      el.dataset.reveal = el.classList.contains('eyebrow') ? 'fade' : 'lines';
+      el.dataset.reveal = el.classList.contains('eyebrow') ? 'fade' : 'words';
     });
     // Images: clip-path mask reveal — but skip avatars + icons.
     document.querySelectorAll('main img').forEach(el => {
@@ -76,14 +76,13 @@
   //    producing a clean per-line stagger.
   // ----------------------------------------------------------------
 
-  // Walk a node tree and replace text nodes with word spans,
+  // Walk a node tree and replace text nodes with WORD spans,
   // preserving inline element wrappers (em, span, br).
   function wrapTextNodes(node) {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent;
       if (!text || !text.trim()) return;
       const frag = document.createDocumentFragment();
-      // Split keeping the whitespace tokens so spacing is preserved.
       const parts = text.split(/(\s+)/);
       parts.forEach(p => {
         if (!p) return;
@@ -101,9 +100,55 @@
     }
     if (node.nodeType !== Node.ELEMENT_NODE) return;
     if (node.tagName === 'BR') return;
-    if (node.classList && node.classList.contains('rv-word')) return; // already wrapped
-    // Recurse into children, but copy the list first because we'll mutate.
+    if (node.classList && node.classList.contains('rv-word')) return;
     Array.from(node.childNodes).forEach(wrapTextNodes);
+  }
+
+  // Walk a node tree and replace text nodes with LETTER spans.
+  // Whitespace is preserved as text nodes between letters (NOT wrapped).
+  // Each letter span keeps a non-breaking layout via inline-block, and
+  // sets a --letter-i CSS variable for its absolute index.
+  function wrapTextNodesByLetter(node, counter) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if (!text) return;
+      const frag = document.createDocumentFragment();
+      for (const ch of text) {
+        if (/\s/.test(ch)) {
+          frag.appendChild(document.createTextNode(ch));
+        } else {
+          const span = document.createElement('span');
+          span.className = 'rv-letter';
+          span.style.setProperty('--letter-i', counter.n++);
+          span.textContent = ch;
+          frag.appendChild(span);
+        }
+      }
+      node.parentNode.replaceChild(frag, node);
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    if (node.tagName === 'BR') return;
+    if (node.classList && node.classList.contains('rv-letter')) return;
+    Array.from(node.childNodes).forEach(child => wrapTextNodesByLetter(child, counter));
+  }
+
+  function splitLetters(el) {
+    if (!el.dataset.rvOriginal) el.dataset.rvOriginal = el.innerHTML;
+    else el.innerHTML = el.dataset.rvOriginal;
+    const counter = { n: 0 };
+    wrapTextNodesByLetter(el, counter);
+    el.style.setProperty('--rv-letters', counter.n);
+  }
+
+  function splitWords(el) {
+    if (!el.dataset.rvOriginal) el.dataset.rvOriginal = el.innerHTML;
+    else el.innerHTML = el.dataset.rvOriginal;
+    wrapTextNodes(el);
+    // Assign an absolute index per word so CSS can stagger per word.
+    const words = el.querySelectorAll('.rv-word');
+    words.forEach((w, i) => w.style.setProperty('--word-i', i));
+    el.style.setProperty('--rv-words', words.length);
   }
 
   function splitLines(el) {
@@ -154,6 +199,8 @@
   function boot() {
     autoTag();
     document.querySelectorAll('[data-reveal="lines"]').forEach(splitLines);
+    document.querySelectorAll('[data-reveal="letters"]').forEach(splitLetters);
+    document.querySelectorAll('[data-reveal="words"]').forEach(splitWords);
     document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
   }
 
@@ -177,6 +224,9 @@
   window.addEventListener('resize', () => {
     clearTimeout(rsz);
     rsz = setTimeout(() => {
+      // Only the line-split needs re-measuring on resize; letter and
+      // word splits are layout-independent because their stagger uses
+      // absolute indices, not measured positions.
       document.querySelectorAll('[data-reveal="lines"]').forEach(splitLines);
     }, RESPLIT_DEBOUNCE);
   });
@@ -185,7 +235,9 @@
   window.JAP_observeReveal = (el) => {
     if (!el || el.dataset.rvObserved) return;
     el.dataset.rvObserved = '1';
-    if (el.dataset.reveal === 'lines') splitLines(el);
+    if (el.dataset.reveal === 'lines')   splitLines(el);
+    if (el.dataset.reveal === 'letters') splitLetters(el);
+    if (el.dataset.reveal === 'words')   splitWords(el);
     io.observe(el);
   };
 })();
