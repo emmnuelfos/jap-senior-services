@@ -236,7 +236,8 @@ a.link-arrow {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--brass-700);
+  /* Brand Blue per client direction — text & icon for borderless buttons. */
+  color: var(--blue);
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -290,33 +291,39 @@ a.link-arrow.on-dark { color: var(--brass-100); }
 }
 .btn:hover { transform: translateY(-2px); }
 
+/* Button colour system per client direction:
+   - Filled buttons     → Brand Blue (#1338BE) background + white text
+   - Outlined buttons   → Brand Blue border + Brand Blue text
+   - Borderless buttons → Brand Blue text + icon
+   On dark surfaces, the ivory-outline variant flips to white text /
+   white border so it stays legible against navy backgrounds. */
 .btn-primary {
-  background: var(--forest);
-  color: var(--ivory);
-  border-color: var(--forest);
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
 }
-.btn-primary:hover { background: var(--forest-800); }
+.btn-primary:hover { background: var(--blue-700); border-color: var(--blue-700); color: #fff; }
 
 .btn-brass {
-  background: var(--brass);
-  color: var(--forest);
-  border-color: var(--brass);
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
 }
-.btn-brass:hover { background: var(--brass-600); color: var(--ivory); }
+.btn-brass:hover { background: var(--blue-700); border-color: var(--blue-700); color: #fff; }
 
 .btn-outline-ivory {
   background: transparent;
   color: var(--ivory);
   border-color: var(--ivory);
 }
-.btn-outline-ivory:hover { background: rgba(245,241,234,0.1); }
+.btn-outline-ivory:hover { background: rgba(255,255,255,0.1); }
 
 .btn-outline-forest {
   background: transparent;
-  color: var(--forest);
-  border-color: var(--forest);
+  color: var(--blue);
+  border-color: var(--blue);
 }
-.btn-outline-forest:hover { background: var(--forest); color: var(--ivory); }
+.btn-outline-forest:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
 
 .btn-large { height: 64px; padding: 0 36px; font-size: 17px; }
 
@@ -1318,18 +1325,21 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 .eyebrow { display: inline-flex; align-items: center; gap: 8px; }
 .eyebrow .ai-icon { display: inline-flex !important; }
 
-/* How-it-works step icon (on Forest background) */
+/* How-it-works step icon (on Forest background) — yellow accent ring +
+   yellow-tinted Lottie glyph per client direction. */
 .step-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 48px; height: 48px;
-  background: rgba(245, 241, 234, 0.06);
-  border: 1px solid rgba(245, 241, 234, 0.18);
+  background: rgba(255, 246, 0, 0.10);
+  border: 1px solid rgba(255, 246, 0, 0.45);
   border-radius: 50%;
   margin-bottom: 18px;
 }
-.step-icon .ai-icon { filter: brightness(0) invert(1) opacity(0.9); }
+.step-icon .ai-icon {
+  filter: brightness(0) saturate(100%) invert(98%) sepia(53%) saturate(4392%) hue-rotate(355deg) brightness(110%) contrast(105%);
+}
 
 /* Testimonial tag pill: brass star + label inline */
 .testimonial .tag { display: inline-flex; align-items: center; gap: 6px; }
@@ -1644,12 +1654,13 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--brass-100);
+  /* Brand Yellow per client direction — accent on the By-the-Numbers band. */
+  color: var(--yellow);
 }
 .stats-band-eyebrow::before {
   content: "";
   width: 28px; height: 1px;
-  background: var(--brass);
+  background: var(--yellow);
   margin-right: 14px;
   display: inline-block;
 }
@@ -1666,8 +1677,9 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0;
-  border-top: 1px solid rgba(184, 118, 62, 0.32);
-  border-bottom: 1px solid rgba(184, 118, 62, 0.32);
+  /* Yellow accent rule lines top + bottom of the stats grid. */
+  border-top: 1px solid rgba(255, 246, 0, 0.45);
+  border-bottom: 1px solid rgba(255, 246, 0, 0.45);
 }
 .stats-cell {
   padding: clamp(36px, 4vw, 56px) clamp(20px, 2vw, 36px);
@@ -1684,11 +1696,16 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   width: 64px; height: 64px;
   align-items: center;
   justify-content: center;
-  background: rgba(184, 118, 62, 0.10);
-  border: 1px solid rgba(184, 118, 62, 0.32);
+  /* Yellow-tinted ring on navy — keeps the icon glyph white inside. */
+  background: rgba(255, 246, 0, 0.10);
+  border: 1px solid rgba(255, 246, 0, 0.45);
   border-radius: 50%;
 }
-.stats-icon .ai-icon { filter: brightness(0) invert(1) opacity(0.92); }
+.stats-icon .ai-icon {
+  /* Brand Yellow recolor via filter chain (works on the white-inverted
+     Lottie strokes). Approximates #FFF600 at the rendered stroke. */
+  filter: brightness(0) saturate(100%) invert(98%) sepia(53%) saturate(4392%) hue-rotate(355deg) brightness(110%) contrast(105%);
+}
 .stats-num {
   font-family: var(--font-display);
   font-weight: 400;
@@ -1699,7 +1716,7 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   font-variant-numeric: tabular-nums;
 }
 .stats-plus {
-  color: var(--brass);
+  color: var(--yellow);
   margin-left: 2px;
 }
 .stats-eyebrow {
@@ -2188,7 +2205,8 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
 .step-ribbon .step .n {
   font-family: var(--font-display);
   font-size: 14px;
-  color: var(--brass-100);
+  /* Yellow accent for step numbers per client direction. */
+  color: var(--yellow);
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
   margin-bottom: 16px;

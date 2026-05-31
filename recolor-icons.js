@@ -1,18 +1,20 @@
 // Recolor every Lottie JSON in prototype/assets/icons/ — two-color outline:
 //   - Strokes in layers tagged "s2g2" (animatedicons.co's secondary color
-//     group) → Warm Brass  (#B8763E)
-//   - All other strokes                            → JAP Navy    (#2D5A91)
+//     group) → Brand Red    (#B90E0A)  — accent
+//   - All other strokes                            → Deep Navy   (#0D2A6B)  — primary
 //   - Fills (ty:"fl")                              → opacity 0 (transparent)
 //
-// Run after a fresh download from CDN (download-icons.sh) to reset state.
+// Run after a fresh download from CDN (download-icons.sh) to reset state, OR
+// idempotently against the previously-recolored set (the script overwrites
+// every stroke colour each pass).
 
 const fs = require('fs');
 const path = require('path');
 
 const ICONS_DIR = path.join(__dirname, 'prototype', 'assets', 'icons');
 
-const NAVY  = [45 / 255, 90 / 255, 145 / 255];   // #2D5A91
-const BRASS = [184 / 255, 118 / 255, 62 / 255];  // #B8763E
+const NAVY  = [13  / 255,  42 / 255, 107 / 255]; // #0D2A6B (Deep Navy)
+const BRASS = [185 / 255,  14 / 255,  10 / 255]; // #B90E0A (Brand Red)
 
 function isColorArray(arr) {
   return Array.isArray(arr) && arr.length >= 3 && arr.length <= 4
