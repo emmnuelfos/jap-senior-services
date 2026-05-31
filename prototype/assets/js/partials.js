@@ -9,15 +9,20 @@
 
   const PHONE = '(205) 253-6537';
   const PHONE_HREF = 'tel:+12052536537';
+  const EMAIL = 'hello@japseniorservices.com';
+  const ADDRESS_LINE_1 = '1515 Bankhead Highway West';
+  const ADDRESS_LINE_2 = 'Birmingham, Alabama 35214';
 
+  // Navigation per client Brand Guide / Site Structure brief.
+  // "Home" anchors the brand-logo click so we don't duplicate it as
+  // a nav link — but it is present in the mobile drawer.
   const NAV = [
-    { href: 'about.html',                 label: 'About' },
+    { href: 'about.html',                 label: 'About Us' },
     { href: 'services.html',              label: 'Services' },
-    { href: 'how-it-works.html',          label: 'How It Works' },
-    { href: 'index.html#why-us',          label: 'Why Us' },
-    { href: 'stories.html',               label: 'Stories' },
+    { href: 'blogs.html',                 label: 'Blog / Resources' },
     { href: 'careers.html',               label: 'Careers' },
-    { href: 'contact.html',               label: 'Contact' },
+    { href: 'faqs.html',                  label: 'FAQs' },
+    { href: 'contact.html',               label: 'Contact Us' },
   ];
 
   /* ---------- HEADER ---------- */
@@ -44,7 +49,7 @@
             </span>
           </a>
           <a class="btn btn-primary btn-arrow" href="contact.html#consult" data-gtm-event="cta_header_consult">
-            Request a Consultation
+            Request a Free Consultation
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
           <button class="header-burger" aria-label="Open menu"><span aria-hidden="true"></span></button>
@@ -65,12 +70,12 @@
       </nav>
       <div class="drawer-foot">
         <a class="btn btn-brass btn-large" href="${PHONE_HREF}">${PHONE}</a>
-        <a class="btn btn-outline-forest btn-large" href="contact.html#consult">Request a Consultation</a>
+        <a class="btn btn-outline-forest btn-large" href="contact.html#consult">Request a Free Consultation</a>
       </div>
     </aside>
   `;
 
-  /* ---------- FOOTER ---------- */
+  /* ---------- FOOTER (per client brief) ---------- */
   const footer = `
     <footer class="site-footer" role="contentinfo">
       <div class="container">
@@ -79,45 +84,48 @@
             <a class="brand-logo brand-logo--dark" href="index.html" aria-label="J.A.P. Senior Care Services — Home">
               <img src="assets/img/jap-logo.webp" alt="J.A.P. Senior Care Services" />
             </a>
-            <p class="dedication">In honor of Ethel M. Sanders — the grandmother whose spirit of care started it all.</p>
+            <p class="dedication">Love, Dignity, Respect. Serving Jefferson &amp; Shelby County, Alabama since 2018.</p>
           </div>
           <div class="footer-col">
-            <h4>Care</h4>
+            <h4>Quick Links</h4>
             <ul>
-              <li><a href="services.html#program-01">Good Morning To You</a></li>
-              <li><a href="services.html#program-02">Welcome Home</a></li>
-              <li><a href="services.html#program-03">Up And At 'Em</a></li>
-              <li><a href="services.html#program-04">Sweet Dreams</a></li>
-              <li><a href="services.html#program-05">Discharge Assistance</a></li>
-              <li><a href="services.html">All nine programs</a></li>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="about.html">About Us</a></li>
+              <li><a href="services.html">Services</a></li>
+              <li><a href="blogs.html">Blog / Resources</a></li>
+              <li><a href="careers.html">Careers</a></li>
+              <li><a href="faqs.html">FAQs</a></li>
+              <li><a href="contact.html">Contact Us</a></li>
             </ul>
           </div>
           <div class="footer-col">
-            <h4>About</h4>
+            <h4>Contact</h4>
             <ul>
-              <li><a href="about.html">Our story</a></li>
-              <li><a href="how-it-works.html">How it works</a></li>
-              <li><a href="stories.html">Family stories</a></li>
-              <li><a href="careers.html">Careers</a></li>
+              <li>${ADDRESS_LINE_1}</li>
+              <li>${ADDRESS_LINE_2}</li>
+              <li><a href="${PHONE_HREF}" class="tabular">${PHONE}</a></li>
+              <li><a href="mailto:${EMAIL}">${EMAIL}</a></li>
+              <li>Serving Jefferson &amp; Shelby County</li>
             </ul>
           </div>
           <div class="footer-col">
             <h4>Connect</h4>
             <ul>
-              <li><a href="contact.html">Contact us</a></li>
-              <li><a href="how-it-works.html#faq">Frequently asked</a></li>
-              <li><a href="contact.html#consult">Request a consultation</a></li>
-              <li><a href="${PHONE_HREF}" class="tabular">${PHONE}</a></li>
+              <li><a href="#" aria-label="Facebook">Facebook</a></li>
+              <li><a href="#" aria-label="Instagram">Instagram</a></li>
+              <li><a href="#" aria-label="X (Twitter)">X (Twitter)</a></li>
             </ul>
+            <p style="margin-top: 16px; font-weight: 700;">Hours: Available 24/7</p>
+            <p style="opacity: 0.75; margin-top: 4px;">Call or message anytime.</p>
           </div>
         </div>
 
         <div class="footer-mid">
-          <div class="area">Serving Alabama families since <span class="tabular">2000</span> · [Region — to be confirmed]</div>
+          <div class="area">Serving Jefferson &amp; Shelby County, Alabama</div>
           <div class="contact-line">
             <a href="${PHONE_HREF}" class="tabular">${PHONE}</a>
-            <span style="color:rgba(245,241,234,0.5)">·</span>
-            <a href="mailto:hello@japseniorservices.com">hello@japseniorservices.com</a>
+            <span style="color:rgba(255,255,255,0.5)">·</span>
+            <a href="mailto:${EMAIL}">${EMAIL}</a>
           </div>
           <div class="socials" aria-label="Social media">
             <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1V9.9H7.7V13h2.6v8h3.2Z"/></svg></a>
@@ -127,12 +135,11 @@
         </div>
 
         <div class="footer-bottom">
-          <div>© <span class="tabular">2026</span> J.A.P Senior Services, LLC. All rights reserved.</div>
+          <div>© <span class="tabular">2025</span> J.A.P. Senior Care Services LLC. All rights reserved.</div>
           <div class="legal">
-            <a href="#">Privacy</a>
-            <a href="#">Accessibility</a>
-            <a href="#">Terms</a>
-            <span style="color:rgba(245,241,234,0.35)">Designed by TaskFlo VA</span>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Use</a>
+            <span style="color:rgba(255,255,255,0.35)">Designed by TaskFlo VA</span>
           </div>
         </div>
       </div>
@@ -152,5 +159,5 @@
   else document.body.insertAdjacentHTML('beforeend', footer);
 
   // Expose constants
-  window.JAP = { PHONE, PHONE_HREF, NAV };
+  window.JAP = { PHONE, PHONE_HREF, EMAIL, NAV };
 })();
