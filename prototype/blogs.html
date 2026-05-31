@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Senior Care Resources &amp; Home Care Tips | J.A.P. Senior Care Services</title>
+  <meta name="description" content="Read helpful articles on senior care, Alzheimer's care, caregiving, home safety, and aging in place from Birmingham's trusted RN-led home care agency." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/site.css" />
+  <style>
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(24px, 3vw, 40px);
+    }
+    .blog-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--ivory);
+      border: var(--hairline);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 380ms var(--rv-ease-out), border-color 380ms var(--rv-ease-out), box-shadow 380ms var(--rv-ease-out);
+    }
+    .blog-card:hover { transform: translateY(-4px); border-color: var(--brass); box-shadow: 0 18px 40px rgba(13, 42, 107, 0.08); }
+    .blog-card .photo {
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: var(--light-gray);
+    }
+    .blog-card .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 600ms var(--rv-ease-out);
+    }
+    .blog-card:hover .photo img { transform: scale(1.04); }
+    .blog-card .body {
+      padding: 24px 24px 28px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .blog-card .meta {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--brass);
+    }
+    .blog-card h3 {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2vw, 24px);
+      line-height: 1.25;
+      color: var(--forest);
+      margin: 0;
+    }
+    .blog-card .read-more {
+      margin-top: auto;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--brass);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    @media (max-width: 1000px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .blog-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page="blogs">
+  <div id="site-header-slot"></div>
+
+  <main id="main">
+
+    <!-- HERO -->
+    <section class="page-hero shortest sage">
+      <div class="container content">
+        <div class="eyebrow">Blog / Resources</div>
+        <h1 class="display-xl" style="margin-top: 24px;">Senior Care Resources &amp;<br />Caregiving Insights.</h1>
+        <p class="sub">Practical guidance, trusted information, and compassionate support for seniors and the families who care for them.</p>
+      </div>
+    </section>
+
+    <!-- BLOG GRID -->
+    <section class="section bg-ivory">
+      <div class="container">
+        <div class="blog-grid">
+
+          <a class="blog-card reveal" href="#post-1">
+            <div class="photo"><img data-photo="consult" alt="" /></div>
+            <div class="body">
+              <span class="meta">Aging at home</span>
+              <h3>Signs Your Aging Parent May Need In-Home Care</h3>
+              <p style="color: var(--text-gray); font-size: 15px; margin: 0;">Recognizing the early signs that a loved one could benefit from extra support at home.</p>
+              <span class="read-more">Read article <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="blog-card reveal" href="#post-2">
+            <div class="photo"><img data-photo="walkingGarden" alt="" /></div>
+            <div class="body">
+              <span class="meta">Memory care</span>
+              <h3>Alzheimer's vs. Dementia: Understanding the Difference</h3>
+              <p style="color: var(--text-gray); font-size: 15px; margin: 0;">What every family should know about the two conditions — and how care plans differ.</p>
+              <span class="read-more">Read article <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="blog-card reveal" href="#post-3">
+            <div class="photo"><img data-photo="morning" alt="" /></div>
+            <div class="body">
+              <span class="meta">Independence</span>
+              <h3>How In-Home Care Helps Seniors Stay Independent Longer</h3>
+              <p style="color: var(--text-gray); font-size: 15px; margin: 0;">The everyday ways professional support extends a senior's ability to age in place.</p>
+              <span class="read-more">Read article <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+        </div>
+
+        <p style="text-align: center; margin-top: 56px; color: var(--text-gray);"><em>More resources coming soon. Have a question we should write about? <a class="link" href="contact.html">Let us know</a>.</em></p>
+      </div>
+    </section>
+
+    <!-- CTA — Need Personalized Guidance? -->
+    <section class="cta-band">
+      <div class="inner reveal">
+        <h2 class="display-l">Need Personalized Guidance?</h2>
+        <p class="sub">Every family's situation is unique. If you have questions about caring for a loved one or would like to learn more about our services, we're here to help.</p>
+        <div class="btns">
+          <a class="btn btn-brass btn-large" href="contact.html#consult">Request a Free Consultation</a>
+          <a class="btn btn-outline-ivory btn-large" href="tel:+12052536537">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+            (205) 253-6537
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="site-footer-slot"></div>
+
+  <script src="assets/js/partials.js"></script>
+  <script src="assets/js/photos.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/reveals.js"></script>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>
