@@ -3,34 +3,57 @@
    Design tokens, base type, layout primitives, shared components
    ============================================================ */
 
-/* ---------- 1. TOKENS ---------- */
+/* ---------- 1. TOKENS ----------
+   Brand palette per client Brand Guide (Yarlardo Henderson, RN).
+   Deep Navy #0D2A6B is the primary dark; Brand Red #B90E0A drives
+   accents + CTAs; Brand Yellow #FFF600 lives in highlight bars +
+   dividers; Brand Blue #1338BE handles links and secondary CTAs.
+
+   Legacy variable names (--forest, --brass, --sage, --ivory) are kept
+   so the cascade of section/component rules continues to resolve —
+   only the values rotate. New semantic tokens (--red, --yellow,
+   --blue, --light-gray, --text-gray) sit alongside for explicit use
+   per the brand guide. */
 :root {
-  /* Primary brand color is J.A.P. Navy (#2D5A91) — sourced from the client's
-     existing brand. Variable names below remain --forest/--sage to avoid a
-     mass rename, but the values are navy + pale sky blue. */
-  --forest:        #2D5A91;    /* JAP Navy (primary dark) */
-  --forest-50:     #E6EDF5;    /* navy 50  — very pale tint */
-  --forest-100:    #B8CBE2;    /* navy 100 — soft tint */
-  --forest-800:    #1F4275;    /* navy 800 — darker */
-  --forest-900:    #15315A;    /* navy 900 — deepest */
-  --brass:         #B8763E;
-  --brass-50:      #F7EDE1;
-  --brass-100:     #EAD2B0;
-  --brass-600:     #9C5F2D;
-  --brass-700:     #7E4C21;
-  --ivory:         #F5F1EA;
-  --ivory-100:     #FBF8F3;
-  --stone:         #8A8782;
-  --stone-200:     #C9C6C1;
-  --stone-300:     #B8B5B0;
-  --charcoal:      #1F1E1C;
-  --charcoal-800:  #2E2D2A;
-  --sage:          #DCE5EF;    /* Pale Sky — secondary section surface */
-  --sage-100:      #EDF1F7;    /* Pale Sky 100 — softer variant */
+  /* Legacy alias → Deep Navy (#0D2A6B) and its tonal range */
+  --forest:        #0D2A6B;    /* Deep Navy — primary backgrounds, headings, footer */
+  --forest-50:     #E1E6F1;    /* navy 50  — very pale tint */
+  --forest-100:    #B8C2DB;    /* navy 100 — soft tint */
+  --forest-800:    #08205A;    /* navy 800 — darker */
+  --forest-900:    #051642;    /* navy 900 — deepest */
+  /* Legacy alias → Brand Red (#B90E0A) and its tonal range */
+  --brass:         #B90E0A;    /* Brand Red — accent, CTA buttons, section headers */
+  --brass-50:      #FBE5E4;
+  --brass-100:     #F5BFBE;
+  --brass-600:     #9A0B08;
+  --brass-700:     #7A0906;
+  /* Legacy alias → White (#FFFFFF) for main page backgrounds */
+  --ivory:         #FFFFFF;
+  --ivory-100:     #FAFAFA;
+  /* Stone (neutral hairlines and rules) */
+  --stone:         #888888;
+  --stone-200:     #E0E0E0;
+  --stone-300:     #C8C8C8;
+  /* Charcoal stays available for very dark text where Text Gray would
+     under-contrast, but body copy now uses --text-gray per brief. */
+  --charcoal:      #1A1A1A;
+  --charcoal-800:  #333333;
+  /* Legacy alias → Light Gray (#F5F5F5) for section bands + card fills */
+  --sage:          #F5F5F5;
+  --sage-100:      #FAFAFA;
   --white:         #FFFFFF;
 
-  --font-display: "Fraunces", "Cormorant Garamond", Georgia, "Times New Roman", serif;
-  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  /* Explicit brand tokens per the Brand Guide */
+  --red:           #B90E0A;    /* Brand Red */
+  --red-700:       #7A0906;    /* darker red for hover */
+  --yellow:        #FFF600;    /* Brand Yellow — highlight bars, dividers */
+  --blue:          #1338BE;    /* Brand Blue — links, info boxes, secondary CTAs */
+  --blue-700:      #0E2A95;    /* darker blue for hover */
+  --light-gray:    #F5F5F5;    /* Light Gray — section bg, card fills */
+  --text-gray:     #555555;    /* Text Gray — body copy, secondary text */
+
+  --font-display: "Playfair Display", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-body:    "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 
   --container: 1280px;
   --gutter:    clamp(20px, 4vw, 48px);
@@ -52,11 +75,12 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--ivory);
-  color: var(--charcoal);
+  /* Body copy per Brand Guide — Text Gray #555555 for readability
+     without competing with Deep Navy headings. */
+  color: var(--text-gray);
   font-family: var(--font-body);
   font-size: 18px;
   line-height: 1.7;
-  font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
