@@ -764,5 +764,154 @@ h1,h2,h3,h4 { font-family: var(--f-display); color: var(--navy); line-height: 1.
 .hero__photo--svg .hero__blobshape path { stroke: #fff; }
 .hero__media--blob { filter: drop-shadow(0 26px 46px rgba(13,42,107,.22)); }
 @media (max-width: 900px) {
-  .hero--inner { min-height: 0; padding-top: calc(var(--header-h) + 2rem); padding-bottom: clamp(2.5rem,6vw,3.5rem); }
+  /* Mobile inner-page hero — same 100 svh target as the homepage
+     gets, so every hero fills the first screen on phones. */
+  .hero--inner {
+    min-height: 100svh;
+    padding-top: calc(var(--header-h) + 1.5rem);
+    padding-bottom: clamp(2.5rem,6vw,3.5rem);
+  }
+}
+
+
+/* =================================================================
+   MOBILE RESPONSIVENESS POLISH
+   Treats mobile as a first-class layout, not a desktop scale-down.
+   Adds proper hero height, navigation legibility, photo sizing,
+   and card/section breathing room on phones.
+   ================================================================= */
+@media (max-width: 900px) {
+  /* Slightly taller header so the brand mark + burger have room. */
+  :root { --header-h: 78px; }
+
+  /* HERO — homepage + inner pages both fill the first screen.
+     100 svh uses the *small* viewport height so the layout still
+     fits when mobile browsers extend their UI chrome (URL bar). */
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: calc(var(--header-h) + 1.75rem);
+    padding-bottom: clamp(2.5rem, 7vw, 4rem);
+  }
+  .hero > .container { width: 100%; }
+  /* Re-anchor the homepage's JS-driven .hero--fill so it doesn't
+     fight the new mobile baseline (was set for desktop). */
+  .hero--fill {
+    min-height: 100svh;
+    padding-top: calc(var(--header-h) + 1.75rem);
+    padding-bottom: clamp(2.5rem, 7vw, 4rem);
+  }
+  /* Blog post / contact / FAQ page hero — also gets a comfortable
+     fill so the entrance reads as a proper hero on phones. */
+  .page-hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: calc(var(--header-h) + 1.75rem);
+    padding-bottom: clamp(2.5rem, 7vw, 4rem);
+  }
+
+  /* NAVIGATION — bigger burger, larger drawer links so the menu
+     feels like a real mobile UI, not a shrunken desktop nav. */
+  .burger { width: 52px; height: 52px; border-radius: 14px; }
+  .burger span { width: 24px; height: 2.5px; margin: 5px auto; }
+  .header__phone .ico { width: 44px; height: 44px; padding: 10px; }
+  .nav { padding: 1.25rem 1.25rem 1.75rem; gap: .35rem; }
+  .nav a {
+    padding: 1rem 1.1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--navy);
+    border-radius: var(--r-sm);
+  }
+  .nav .btn { display: flex; margin-top: 1rem; min-height: 56px; font-size: 1.05rem; }
+
+  /* HERO IMAGE — let the photo grow on tablet-width phones so it
+     doesn't sit as a tiny 460-px island in the middle of the
+     viewport. Caps at 540 px and stays centered. */
+  .hero__media { max-width: 540px; }
+  .hero__photo { aspect-ratio: 4/5; }
+
+  /* HERO HEADLINE — tighten the clamp so the headline doesn't
+     dominate the whole first screen on phones. */
+  .hero h1 { font-size: clamp(2rem, 7vw, 2.8rem); line-height: 1.1; }
+  .hero__sub { font-size: clamp(1rem, 2.6vw, 1.1rem); }
+  .hero__lede { font-size: clamp(1rem, 2.4vw, 1.08rem); margin-top: .9rem; }
+
+  /* SECTION SPACING — proper breathing room on phones. */
+  main > section, main > .section { padding-block: clamp(3rem, 9vw, 4.5rem); }
+
+  /* CARDS — keep generous touch-friendly padding on phones. */
+  .feature { padding: 1.75rem 1.5rem; }
+  .feature__icon { width: 56px; height: 56px; margin-bottom: .9rem; }
+  .feature h3 { font-size: 1.2rem; }
+  .mv__card { padding: 1.6rem 1.5rem; }
+  .value { padding: 1.6rem 1.4rem; }
+
+  /* DEDICATION CARD — phone tuning. */
+  .dedication__photo { aspect-ratio: 4/5; }
+  .dedication__quote-mark { font-size: 5.5rem; top: -16px; left: -8px; }
+  .dedication__tag { right: 0; padding: .7rem 1rem; }
+  .dedication blockquote { font-size: clamp(1.15rem, 4vw, 1.4rem); }
+
+  /* STATS — bigger gap so the band isn't crammed. */
+  .stats { gap: 2.5rem 1.25rem; }
+  .stat__num { font-size: clamp(2.2rem, 9vw, 3rem); }
+  .stat__label { font-size: 1rem; line-height: 1.3; }
+
+  /* CTA-FINAL — keep substantial padding on phone. */
+  .cta-final__inner { padding: 2.25rem 1.75rem; }
+  .cta-final h2 { font-size: clamp(1.7rem, 6.5vw, 2.4rem); }
+  .cta-final p { font-size: 1rem; }
+  .cta-final__phone { font-size: 1.05rem; }
+
+  /* INNER PAGE SECTIONS — ensure photos read as photos, not chips. */
+  .bio__media, .svc-row__media, .dedication__media { max-width: 540px; }
+  .bio__photo, .dedication__photo { aspect-ratio: 4/5; }
+
+  /* PAGE HERO inner title sizing. */
+  .page-hero__title { font-size: clamp(2.1rem, 7vw, 2.8rem); }
+  .page-hero__sub { font-size: clamp(1rem, 2.4vw, 1.1rem); }
+
+  /* HERO TRUST ROW — give the checks room. */
+  .hero__trust { gap: .9rem 1.4rem; }
+  .hero__trust li { font-size: .96rem; }
+
+  /* CONTACT cards bigger touch surfaces. */
+  .contact-card { padding: 1.1rem 1.2rem; min-height: 80px; }
+  .contact-card__ic { width: 52px; height: 52px; }
+
+  /* FORM FIELDS — bump min-height for easier tapping. */
+  .field input, .field select, .field textarea { min-height: 52px; font-size: 1.04rem; }
+
+  /* FOOTER columns get more vertical space. */
+  .footer__grid { gap: 2.5rem; padding-bottom: 2.5rem; }
+  .footer h4 { font-size: .9rem; }
+  .footer__links a { font-size: 1.02rem; }
+}
+
+@media (max-width: 560px) {
+  /* PHONE-ONLY refinements. */
+
+  /* Slight extra hero padding so content doesn't kiss the header. */
+  .hero, .hero--fill, .hero--inner, .page-hero {
+    padding-top: calc(var(--header-h) + 1.25rem);
+  }
+
+  /* Hero image fills more width on small phones. */
+  .hero__media { max-width: none; }
+  .hero__photo {
+    aspect-ratio: 4/5;
+    border-radius: 38% 38% 34% 34% / 8% 8% 4% 4%;
+  }
+  /* Tighter padding for cards on small phones. */
+  .feature { padding: 1.5rem 1.25rem; }
+  .mv__card { padding: 1.4rem 1.3rem; }
+  .value { padding: 1.4rem 1.2rem; }
+
+  /* Section spacing trims slightly. */
+  main > section, main > .section { padding-block: clamp(2.5rem, 10vw, 3.5rem); }
 }
