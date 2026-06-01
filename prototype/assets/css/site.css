@@ -404,8 +404,12 @@ a.link-arrow.on-dark { color: var(--brass-100); }
 .site-footer .brand .brand-logo { margin-bottom: 18px; }
 
 @media (max-width: 700px) {
-  .brand-logo img { height: 52px; }
-  .is-scrolled .brand-logo img { height: 46px; }
+  /* Keep the logo readable on mobile — the smaller height the
+     header used to use made the brand mark recede behind the right
+     cluster. 60 px reads as a proper brand mark beside the icon CTA
+     and burger. */
+  .brand-logo img { height: 60px; }
+  .is-scrolled .brand-logo img { height: 52px; }
   .brand-logo--dark img { height: 72px; }
 }
 
@@ -2654,6 +2658,38 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   .home-hero[data-variant="editorial-split"] .left h1 {
     max-width: none;
   }
+  /* Hero CTAs share one row on mobile per client direction. Each
+     button gets flex: 1 so they split the width 50/50 and tighten
+     padding/font so the labels fit comfortably. */
+  .home-hero .ctas {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  .home-hero .ctas .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 14px;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .home-hero .ctas .btn.btn-large {
+    height: 56px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+  .home-hero .ctas .btn svg { flex-shrink: 0; }
+  /* Smaller hero photo so it doesn't dominate the screen on mobile.
+     Tightens both the aspect ratio and the max viewport cap. */
+  .home-hero[data-variant="editorial-split"] .right .hero-photo-stage {
+    aspect-ratio: 5 / 4;
+    max-height: 42svh;
+  }
+  /* Bump the mobile logo so the navigation reads as balanced — the
+     CTA cluster on the right was overpowering the small mark on the
+     left. */
+  .brand-logo img { height: 60px; }
 }
 
 /* Variant C: quiet typographic */
