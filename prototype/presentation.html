@@ -3,874 +3,374 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>J.A.P Senior Services — A Web Design Proposal · TaskFlo VA</title>
+  <title>J.A.P. Senior Care Services — Presented by TaskFlo</title>
+  <meta name="description" content="Two complete web design directions for J.A.P. Senior Care Services, presented by TaskFlo." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/deck.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =====================================================
+       J.A.P. Presentation — Cover
+       Standalone deck, dark navy stage, device-mockup hero
+       ===================================================== */
+    :root {
+      --navy-deep:  #04102e;
+      --navy:       #0A1F4E;
+      --navy-glow:  #1B3A7E;
+      --ink:        #E8ECF7;
+      --ink-soft:   #9FA9C6;
+      --accent:     #FF6B6B;     /* red used in TaskFlo check */
+      --f-display:  "Inter", "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --f-body:     "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --ease:       cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: var(--navy-deep);
+      color: var(--ink);
+      font-family: var(--f-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; height: auto; }
+
+    /* ----- STAGE ----- */
+    .slide-cover {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      isolation: isolate;
+    }
+    /* Layered background: navy → subtle radial glow on the right
+       where the device cluster sits. Adds depth without busy noise. */
+    .slide-cover::before,
+    .slide-cover::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .slide-cover::before {
+      background:
+        radial-gradient(1100px 720px at 78% 50%, rgba(38, 86, 188, 0.45), transparent 65%),
+        radial-gradient(720px 480px at 92% 14%, rgba(56, 116, 220, 0.30), transparent 60%),
+        radial-gradient(900px 640px at 6% 96%, rgba(8, 24, 64, 0.65), transparent 55%);
+    }
+    .slide-cover::after {
+      background:
+        linear-gradient(180deg, rgba(4,16,46,0.0) 60%, rgba(4,16,46,0.55) 100%);
+    }
+
+    /* TaskFlo brand corner */
+    .brand {
+      position: absolute;
+      top: clamp(28px, 4vw, 56px);
+      left: clamp(28px, 4vw, 56px);
+      z-index: 4;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(-12px);
+      animation: coverEnter 900ms var(--ease) 80ms forwards;
+    }
+    .brand img {
+      height: 32px;
+      width: auto;
+      /* Supplied PNG is white-on-transparent + a red check; invert
+         keeps it white on this dark stage. */
+      filter: brightness(0) invert(1);
+    }
+
+    /* ----- TWO-COLUMN BODY ----- */
+    .cover-grid {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: clamp(120px, 14vh, 180px) clamp(28px, 6vw, 96px) clamp(60px, 8vh, 100px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: clamp(24px, 4vw, 64px);
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* ----- LEFT: COPY ----- */
+    .cover-copy { position: relative; max-width: 560px; }
+    .cover-eyebrow {
+      font-family: var(--f-body);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--ink);
+      opacity: 0;
+      transform: translateY(12px);
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: clamp(28px, 4vh, 36px);
+    }
+    .cover-eyebrow::before {
+      content: "";
+      width: 36px;
+      height: 1.5px;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .cover-title {
+      font-family: var(--f-display);
+      font-weight: 800;
+      font-size: clamp(48px, 6.4vw, 92px);
+      line-height: 1.02;
+      letter-spacing: -0.025em;
+      color: #fff;
+      margin: 0 0 clamp(28px, 4vh, 40px);
+      text-wrap: balance;
+    }
+    .cover-title .line { display: block; overflow: hidden; }
+    .cover-title .line > span {
+      display: inline-block;
+      transform: translateY(110%);
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    .cover-copy p {
+      font-family: var(--f-body);
+      font-size: clamp(15px, 1.05vw, 17px);
+      line-height: 1.7;
+      color: var(--ink-soft);
+      max-width: 48ch;
+      margin: 0 0 clamp(36px, 6vh, 56px);
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    /* ----- ENTER PRESENTATION button ----- */
+    .enter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      font-family: var(--f-body);
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink);
+      opacity: 0;
+      transform: translateY(18px);
+      transition: color 250ms var(--ease), transform 250ms var(--ease);
+      cursor: pointer;
+    }
+    .enter-btn .enter-ring {
+      width: 44px;
+      height: 44px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 250ms var(--ease), background 250ms var(--ease), transform 350ms var(--ease);
+    }
+    .enter-btn .enter-ring svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 350ms var(--ease);
+    }
+    .enter-btn:hover { color: #fff; transform: translateY(-1px); }
+    .enter-btn:hover .enter-ring {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .enter-btn:hover .enter-ring svg { transform: translateX(3px); }
+
+    /* ----- RIGHT: DEVICE COMPOSITION ----- */
+    .cover-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 11 / 9;
+      perspective: 1600px;
+    }
+    .device {
+      position: absolute;
+      will-change: transform, opacity;
+      opacity: 0;
+      filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.55));
+    }
+    .device img { width: 100%; height: auto; display: block; }
+
+    /* Layered composition mirroring the cover comp. Each device gets
+       a translate3d origin off to the right so the entry feels like
+       the devices flew in from off-stage. */
+    .device--laptop-1 {
+      width: 72%;
+      top: 6%;
+      left: 8%;
+      z-index: 2;
+      transform: translate3d(60px, 30px, 0) rotateY(-6deg);
+    }
+    .device--mobile-1 {
+      width: 18%;
+      bottom: 8%;
+      left: 14%;
+      z-index: 4;
+      transform: translate3d(80px, 50px, 0) rotateZ(-4deg);
+    }
+    .device--laptop-2 {
+      width: 50%;
+      top: 28%;
+      right: 0%;
+      z-index: 1;
+      transform: translate3d(120px, 60px, 0) rotateY(8deg);
+    }
+    .device--mobile-2 {
+      width: 22%;
+      bottom: 4%;
+      right: 8%;
+      z-index: 3;
+      transform: translate3d(100px, 80px, 0) rotateZ(6deg);
+    }
+
+    /* ----- KEYFRAMES + ENTRANCE TRIGGERS ----- */
+    @keyframes coverEnter        { to { opacity: 1; transform: translateY(0); } }
+    @keyframes titleLineUp       { to { transform: translateY(0); opacity: 1; } }
+    @keyframes deviceFlyLaptop1  { to { opacity: 1; transform: translate3d(0,0,0) rotateY(-6deg); } }
+    @keyframes deviceFlyMobile1  { to { opacity: 1; transform: translate3d(0,0,0) rotateZ(-4deg); } }
+    @keyframes deviceFlyLaptop2  { to { opacity: 1; transform: translate3d(0,0,0) rotateY(8deg);  } }
+    @keyframes deviceFlyMobile2  { to { opacity: 1; transform: translate3d(0,0,0) rotateZ(6deg);  } }
+
+    /* Trigger animations after the page is ready. Without rAF the
+       initial state would have already been overwritten by the time
+       the browser kicks the animation off. */
+    body.is-ready .cover-eyebrow { animation: coverEnter 800ms var(--ease) 200ms forwards; }
+    body.is-ready .cover-title .line > span { animation: titleLineUp 1100ms var(--ease) forwards; }
+    body.is-ready .cover-title .line:nth-child(1) > span { animation-delay: 380ms; }
+    body.is-ready .cover-title .line:nth-child(2) > span { animation-delay: 520ms; }
+    body.is-ready .cover-copy p { animation: coverEnter 800ms var(--ease) 880ms forwards; }
+    body.is-ready .enter-btn { animation: coverEnter 800ms var(--ease) 1080ms forwards; }
+    body.is-ready .device--laptop-1 { animation: deviceFlyLaptop1 1300ms var(--ease) 320ms forwards; }
+    body.is-ready .device--mobile-1 { animation: deviceFlyMobile1 1300ms var(--ease) 560ms forwards; }
+    body.is-ready .device--laptop-2 { animation: deviceFlyLaptop2 1300ms var(--ease) 460ms forwards; }
+    body.is-ready .device--mobile-2 { animation: deviceFlyMobile2 1300ms var(--ease) 720ms forwards; }
+
+    /* ----- AMBIENT GLINT (the bright top-right glow visible in the comp) ----- */
+    .glint {
+      position: absolute;
+      top: -10%; right: -10%;
+      width: 60%; height: 60%;
+      background: radial-gradient(closest-side, rgba(255,255,255,0.12), transparent 70%);
+      filter: blur(20px);
+      pointer-events: none;
+      z-index: 1;
+      animation: glintPulse 6s ease-in-out infinite;
+    }
+    @keyframes glintPulse {
+      0%,100% { opacity: 0.6; transform: scale(1); }
+      50%     { opacity: 1.0; transform: scale(1.05); }
+    }
+
+    /* ----- RESPONSIVE ----- */
+    @media (max-width: 980px) {
+      .cover-grid {
+        grid-template-columns: 1fr;
+        gap: clamp(40px, 6vh, 72px);
+        padding-top: clamp(120px, 16vh, 200px);
+      }
+      .cover-stage {
+        order: 2;
+        max-width: 580px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .cover-title { font-size: clamp(38px, 9vw, 64px); }
+    }
+    @media (max-width: 560px) {
+      .brand img { height: 26px; }
+      .cover-grid { padding: clamp(100px, 14vh, 140px) 24px 60px; }
+      .cover-eyebrow { font-size: 11.5px; letter-spacing: 0.28em; }
+      .cover-title { font-size: clamp(34px, 11vw, 52px); }
+      .device--laptop-1 { width: 78%; }
+      .device--mobile-1 { width: 20%; }
+      .device--laptop-2 { width: 56%; }
+      .device--mobile-2 { width: 24%; }
+    }
+
+    /* Reduced motion — keep things readable, kill drift. */
+    @media (prefers-reduced-motion: reduce) {
+      body.is-ready * { animation: none !important; transition: none !important; }
+      .cover-title .line > span,
+      .cover-copy p,
+      .cover-eyebrow,
+      .enter-btn,
+      .device,
+      .brand { opacity: 1 !important; transform: none !important; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Persistent chrome -->
-  <a class="agency-mark" href="#slide-1" aria-label="TaskFlo VA — Home Care VA Solutions">
-    <img class="agency-mark-img" src="assets/img/taskflova-logo.png" alt="TaskFlo VA" />
-  </a>
+  <main class="slide-cover" aria-label="Cover slide">
+    <div class="glint" aria-hidden="true"></div>
 
-  <!-- Bottom-center nav pill (Arabland-style) -->
-  <nav class="deck-nav" aria-label="Slide navigation">
-    <button class="deck-nav-btn deck-nav-prev" aria-label="Previous slide">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
-    <div class="deck-nav-track" role="progressbar" aria-label="Slide progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-      <div class="deck-nav-fill"></div>
-      <div class="deck-nav-marker" aria-hidden="true"></div>
-    </div>
-    <button class="deck-nav-btn deck-nav-next" aria-label="Next slide">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-    <div class="deck-nav-counter" aria-live="polite">
-      <span class="curr">01</span>
-      <span class="div">·</span>
-      <span class="total">18</span>
-    </div>
-  </nav>
+    <!-- TaskFlo wordmark in the corner -->
+    <a class="brand" href="#" aria-label="TaskFlo">
+      <img src="assets/img/cover/taskflo-logo.png" alt="TaskFlo" />
+    </a>
 
-  <!-- Slide index overlay (Esc to toggle) -->
-  <div class="index-overlay" aria-hidden="true">
-    <div class="index-head">
-      <div class="eyebrow">Slide index</div>
-      <button class="index-close" aria-label="Close index"></button>
-    </div>
-    <div class="index-grid"></div>
-  </div>
-
-  <main class="deck">
-
-    <!-- ============== SLIDE 1 — COVER ============== -->
-    <section class="slide cover" id="slide-1" data-title="Cover">
-      <div class="cover-grid">
-        <div class="cover-left">
-          <div class="eyebrow">A web design proposal</div>
-          <h1 class="display-cover">J.A.P<br />Senior<br />Services<span class="period">.</span></h1>
-          <p class="italic-lead">A new home online.</p>
-          <div class="cover-foot">
-            <div class="rule"></div>
-            <div class="prep">
-              <span>Prepared by TaskFlo VA</span>
-              <span class="dot">·</span>
-              <span class="date">November 2025</span>
-            </div>
-          </div>
-        </div>
-        <div class="cover-right">
-          <div class="cover-photo">
-            <img class="photo-fill" src="assets/img/generated/heroPorch.webp" alt="An older African American man in a cane rocking chair on a Southern porch at golden hour" />
-            <div class="photo-grain"></div>
-            <div class="photo-caption">
-              <span>Editorial portrait</span>
-              <span>Golden hour</span>
-            </div>
-          </div>
-          <div class="cover-tag">
-            <span>Pitched to</span>
-            <b>J.A.P Senior Services, LLC</b>
-            <span>Alabama</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 2 — THE BRIEF ============== -->
-    <section class="slide brief" id="slide-2" data-title="The brief">
-      <div class="center-stack">
-        <div class="eyebrow">The brief</div>
-        <h2 class="display-l">What you asked us for.</h2>
-
-        <figure class="bigquote">
-          <span class="qmark">“</span>
-          <blockquote>Clean, professional, easy to navigate. More modern. More luxurious. Easy for seniors to use.</blockquote>
-          <figcaption>— The client, in their own words</figcaption>
-        </figure>
-
-        <div class="chips">
-          <span class="chip">Clarity</span>
-          <span class="chip">Premium</span>
-          <span class="chip">Accessibility</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 3 — OUR APPROACH ============== -->
-    <section class="slide approach" id="slide-3" data-title="Our approach">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Our approach</div>
-          <h2 class="display-l">Four principles<br />we designed against.</h2>
-        </div>
-        <p class="lead">Every decision in this design traces back to one of these four. When two pulled against each other, we let these decide.</p>
-      </div>
-      <div class="principles">
-        <div class="principle">
-          <div class="num"><span class="ai-icon" data-icon="lightbulb" data-size="32" aria-hidden="true"></span>01</div>
-          <h3>Editorial over clinical.</h3>
-          <p>We dressed the site like a wellness brand, not a hospital. Senior care deserves the dignity of a magazine.</p>
-        </div>
-        <div class="principle">
-          <div class="num"><span class="ai-icon" data-icon="sun" data-size="32" aria-hidden="true"></span>02</div>
-          <h3>Big and breathable.</h3>
-          <p>Larger type, more whitespace, fewer choices per screen. Easier to use at any age — but especially this one.</p>
-        </div>
-        <div class="principle">
-          <div class="num"><span class="ai-icon" data-icon="heart" data-size="32" aria-hidden="true"></span>03</div>
-          <h3>Photography does<br />the heavy lifting.</h3>
-          <p>Warm, human, intergenerational. No stock medical imagery. Every photo earns its space.</p>
-        </div>
-        <div class="principle">
-          <div class="num"><span class="ai-icon" data-icon="star" data-size="32" aria-hidden="true"></span>04</div>
-          <h3>One CTA per moment.</h3>
-          <p>Visitors never have to choose between five buttons. We guide one decision at a time.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 4 — COLOR PALETTE ============== -->
-    <section class="slide palette" id="slide-4" data-title="Color palette">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Color</div>
-          <h2 class="display-l">A palette built for<br />warmth and trust.</h2>
-        </div>
-        <p class="lead">We built the palette around the navy your brand already owns — a colour that signals trust, calm, and clinical competence — then paired it with a warm brass for the moments of human warmth. Ivory replaces pure white throughout to soften the screen for older eyes.</p>
-      </div>
-
-      <div class="swatches">
-        <div class="sw" style="--c:#2D5A91">
-          <div class="sw-fill"></div>
-          <div class="sw-meta">
-            <span class="sw-name">J.A.P. Navy</span>
-            <span class="sw-hex">#2D5A91</span>
-          </div>
-        </div>
-        <div class="sw" style="--c:#B8763E">
-          <div class="sw-fill"></div>
-          <div class="sw-meta">
-            <span class="sw-name">Warm Brass</span>
-            <span class="sw-hex">#B8763E</span>
-          </div>
-        </div>
-        <div class="sw" style="--c:#F5F1EA">
-          <div class="sw-fill"></div>
-          <div class="sw-meta">
-            <span class="sw-name">Ivory</span>
-            <span class="sw-hex">#F5F1EA</span>
-          </div>
-        </div>
-        <div class="sw" style="--c:#8A8782">
-          <div class="sw-fill"></div>
-          <div class="sw-meta">
-            <span class="sw-name">Stone Grey</span>
-            <span class="sw-hex">#8A8782</span>
-          </div>
-        </div>
-        <div class="sw" style="--c:#1F1E1C">
-          <div class="sw-fill"></div>
-          <div class="sw-meta">
-            <span class="sw-name">Charcoal</span>
-            <span class="sw-hex">#1F1E1C</span>
-          </div>
-        </div>
-        <div class="sw" style="--c:#DCE5EF">
-          <div class="sw-fill"></div>
-          <div class="sw-meta">
-            <span class="sw-name">Pale Sky</span>
-            <span class="sw-hex">#DCE5EF</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 5 — TYPOGRAPHY ============== -->
-    <section class="slide typography" id="slide-5" data-title="Typography">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Typography</div>
-          <h2 class="display-l">Editorial type.<br />Sized for everyone.</h2>
-        </div>
-        <p class="lead">Fraunces gives the brand a literary character without feeling old-fashioned. Inter at 18px (a point larger than the industry default) is the most readable sans on the web — important because the average reader is between 55 and 80 years old, or their adult child reading on their behalf.</p>
-      </div>
-
-      <div class="type-split">
-        <div class="type-col">
-          <div class="micro-label"><span class="micro-name">FRAUNCES</span><span class="micro-meta">Display · 300–500 · ital</span></div>
-          <div class="type-sample-display">Love, dignity,<br />respect<span class="period">.</span></div>
-          <div class="type-stack">
-            <div class="type-line"><span class="size">56pt</span><span class="serif fr-h2">A safer day.</span></div>
-            <div class="type-line"><span class="size">40pt</span><span class="serif fr-h3">Started by family.</span></div>
-            <div class="type-line"><span class="size">28pt</span><span class="serif fr-h4">Our story</span></div>
-          </div>
-        </div>
-        <div class="type-col">
-          <div class="micro-label"><span class="micro-name">INTER</span><span class="micro-meta">Body · 18px minimum</span></div>
-          <div class="eyebrow" style="margin-bottom: 16px;">Our care programs</div>
-          <p class="body-sample-20">Family-owned, in-home senior care across Alabama. Twenty-five years of helping loved ones live well — on their own terms, in their own home.</p>
-          <p class="body-sample-18">A care plan designed around the routines your loved one already keeps. Built with our on-staff Registered Nurse, adjusted with the seasons, paid for month-to-month with no long contracts.</p>
-          <div class="type-stack" style="margin-top: 28px;">
-            <div class="type-line"><span class="size">20px</span><span class="sans">Lead paragraphs · 1.6 line-height</span></div>
-            <div class="type-line"><span class="size">18px</span><span class="sans">Body copy · minimum size</span></div>
-            <div class="type-line"><span class="size">12px</span><span class="sans micro-caps">Eyebrows · letterspaced caps</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 6 — WORDMARK ============== -->
-    <section class="slide identity" id="slide-6" data-title="The wordmark">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Identity</div>
-          <h2 class="display-l">A wordmark that holds<br />the family inside it.</h2>
-        </div>
-        <p class="lead">The full stops between J·A·P are deliberate — a measured pace, a name you can read aloud. Senior Services beneath it, letterspaced and quiet, framing the family name like a plaque.</p>
-      </div>
-
-      <div class="identity-grid">
-        <div class="big-wordmark">
-          <div class="bwm-mark">J<span>.</span>A<span>.</span>P<span>.</span></div>
-          <div class="bwm-sub">Senior&nbsp;&nbsp;Services</div>
-        </div>
-
-        <div class="identity-side">
-          <div class="lockup">
-            <div class="lockup-label">01 · Horizontal</div>
-            <div class="lockup-art">
-              <span class="hl-mark">J.A.P.</span>
-              <span class="hl-pipe"></span>
-              <span class="hl-sub">Senior Services</span>
-            </div>
-          </div>
-
-          <div class="lockup">
-            <div class="lockup-label">02 · Stacked</div>
-            <div class="lockup-art stacked">
-              <span class="hl-mark">J.A.P.</span>
-              <span class="hl-sub">Senior Services</span>
-            </div>
-          </div>
-
-          <div class="lockup">
-            <div class="lockup-label">03 · Monogram · Favicon</div>
-            <div class="lockup-art mono">
-              <span class="mono-glyph">J.A.P.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="plaque">
-        <span class="plaque-rule"></span>
-        <span class="plaque-italic">In honor of Ethel M. Sanders</span>
-        <span class="plaque-rule"></span>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 7 — SITEMAP ============== -->
-    <section class="slide sitemap" id="slide-7" data-title="The sitemap">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Information architecture</div>
-          <h2 class="display-l">Seven pages.<br />One clear journey.</h2>
-        </div>
-        <p class="lead">The current site is a single page. We've grown it to seven — one for every step of a family's decision, from learning about you to scheduling a consultation.</p>
-      </div>
-
-      <div class="sitemap-river">
-        <svg class="river-svg" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 45 L1200 45" stroke="#B8763E" stroke-width="1" stroke-dasharray="2 6"/>
-        </svg>
-        <div class="nodes">
-          <div class="node">
-            <div class="node-dot"></div>
-            <div class="node-num">01</div>
-            <div class="node-name">Home</div>
-            <div class="node-desc">The promise. Trust signals. Six featured programs.</div>
-          </div>
-          <div class="node">
-            <div class="node-dot"></div>
-            <div class="node-num">02</div>
-            <div class="node-name">About</div>
-            <div class="node-desc">The Ethel dedication. Mission, vision, seven values.</div>
-          </div>
-          <div class="node">
-            <div class="node-dot"></div>
-            <div class="node-num">03</div>
-            <div class="node-name">Services</div>
-            <div class="node-desc">All nine programs, one easy page. Sticky sub-nav.</div>
-          </div>
-          <div class="node">
-            <div class="node-dot"></div>
-            <div class="node-num">04</div>
-            <div class="node-name">How It Works</div>
-            <div class="node-desc">Four steps. Eight frequently asked.</div>
-          </div>
-          <div class="node">
-            <div class="node-dot"></div>
-            <div class="node-num">05</div>
-            <div class="node-name">Stories</div>
-            <div class="node-desc">A featured story. Six family testimonials.</div>
-          </div>
-          <div class="node">
-            <div class="node-dot"></div>
-            <div class="node-num">06</div>
-            <div class="node-name">Careers</div>
-            <div class="node-desc">Why work here. Open roles. Application form.</div>
-          </div>
-          <div class="node">
-            <div class="node-dot"></div>
-            <div class="node-num">07</div>
-            <div class="node-name">Contact</div>
-            <div class="node-desc">Form. Service area map. Big phone.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sitemap-foot">
-        <div class="sf-stat"><b class="tabular">1</b> page today</div>
-        <span class="arrow-right">→</span>
-        <div class="sf-stat"><b class="tabular">7</b> pages launched</div>
-        <span class="arrow-right">→</span>
-        <div class="sf-stat"><b class="tabular">∞</b> conversations started</div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 8 — HOMEPAGE WALKTHROUGH ============== -->
-    <section class="slide walkthrough home-wt" id="slide-8" data-title="Homepage walkthrough">
-      <div class="walk-grid">
-        <div class="walk-left">
-          <div class="page-mock">
-            <div class="pm-section pm-hero">
-              <div class="pm-eyebrow">CARE THAT HONORS A LIFETIME</div>
-              <div class="pm-h1">A safer day.<br/><i>A more fulfilling life.</i></div>
-              <div class="pm-ctas"><span class="pm-cta primary"></span><span class="pm-cta ghost"></span></div>
-              <div class="pm-anchor" data-anchor="1"></div>
-            </div>
-            <div class="pm-section pm-trust">
-              <div class="pm-cell"><div class="num">25+</div><div class="lbl">years</div></div>
-              <div class="pm-cell"><div class="num">9</div><div class="lbl">programs</div></div>
-              <div class="pm-cell"><div class="num">RN</div><div class="lbl">on staff</div></div>
-              <div class="pm-cell"><div class="num">100%</div><div class="lbl">family</div></div>
-              <div class="pm-anchor" data-anchor="2"></div>
-            </div>
-            <div class="pm-section pm-services">
-              <div class="pm-row6">
-                <div class="pm-card"></div><div class="pm-card"></div><div class="pm-card"></div>
-                <div class="pm-card"></div><div class="pm-card"></div><div class="pm-card"></div>
-              </div>
-              <div class="pm-anchor" data-anchor="3"></div>
-            </div>
-            <div class="pm-section pm-story sage">
-              <div class="pm-split"><div class="pm-photo"></div><div class="pm-text"></div></div>
-              <div class="pm-anchor" data-anchor="4"></div>
-            </div>
-            <div class="pm-section pm-steps forest">
-              <div class="pm-step"><b>01</b><span></span></div>
-              <div class="pm-step"><b>02</b><span></span></div>
-              <div class="pm-step"><b>03</b><span></span></div>
-              <div class="pm-anchor" data-anchor="5"></div>
-            </div>
-            <div class="pm-section pm-stories">
-              <div class="pm-quote"></div><div class="pm-quote"></div>
-              <div class="pm-anchor" data-anchor="6"></div>
-            </div>
-            <div class="pm-section pm-cta forest">
-              <div class="pm-ctah">Have questions? Let's talk.</div>
-              <div class="pm-ctas"><span class="pm-cta brass"></span><span class="pm-cta ghost"></span></div>
-              <div class="pm-anchor" data-anchor="7"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="walk-right">
-          <div class="eyebrow">Homepage</div>
-          <h2 class="display-m">Everything they need,<br />in the order they need it.</h2>
-          <p class="lead">A scannable spine — seven moments, each earning the scroll to the next.</p>
-          <ol class="callouts">
-            <li><span class="co-num">01</span><div><b>Hero with the phone number.</b><span>The number visible before the family even scrolls.</span></div></li>
-            <li><span class="co-num">02</span><div><b>Trust strip — credentials in four seconds.</b><span>Years, programs, RN, family-owned.</span></div></li>
-            <li><span class="co-num">03</span><div><b>Six featured care programs.</b><span>The most-requested. Link to all nine.</span></div></li>
-            <li><span class="co-num">04</span><div><b>Our family story.</b><span>A short preview of the Ethel dedication.</span></div></li>
-            <li><span class="co-num">05</span><div><b>How it works in three steps.</b><span>A free consult. A plan. Care that grows.</span></div></li>
-            <li><span class="co-num">06</span><div><b>Family stories.</b><span>Real voices, clearly placeholdered today.</span></div></li>
-            <li><span class="co-num">07</span><div><b>Final CTA — call or request.</b><span>The page ends where it started: in conversation.</span></div></li>
-          </ol>
-          <a class="ghost-link" href="index.html" onclick="try{(window.top||window).location.href=this.href;}catch(e){window.location.href=this.href;}return false;">Open the live homepage<span>→</span></a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 9 — SERVICES PAGE ============== -->
-    <section class="slide walkthrough services-wt" id="slide-9" data-title="Services page">
-      <div class="walk-grid">
-        <div class="walk-left">
-          <div class="services-mock">
-            <div class="sm-block">
-              <div class="sm-photo"></div>
-              <div class="sm-body">
-                <div class="sm-eyebrow">PROGRAM 01</div>
-                <div class="sm-h">Good Morning To You<span class="period">.</span></div>
-                <div class="sm-p">A spirited start to the day, on your loved one's pace. We help with dressing, grooming, and bed-making — then a medication reminder so the morning stays on track. We finish with a quiet escort to breakfast.</div>
-                <div class="sm-incl">WHAT'S INCLUDED</div>
-                <ul class="sm-ticks">
-                  <li>Help with dressing and grooming</li>
-                  <li>Bed-making and light tidy</li>
-                  <li>Medication reminder</li>
-                  <li>Escort to breakfast</li>
-                </ul>
-                <div class="sm-btn">Request this service</div>
-              </div>
-            </div>
-            <div class="sm-subnav">
-              <span class="sm-pill active">01 · Good Morning</span>
-              <span class="sm-pill">02 · Welcome Home</span>
-              <span class="sm-pill">03 · Up And At 'Em</span>
-              <span class="sm-pill">04 · Sweet Dreams</span>
-              <span class="sm-pill">05 · Discharge</span>
-              <span class="sm-pill">…</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="walk-right">
-          <div class="eyebrow">Services</div>
-          <h2 class="display-m">Nine programs.<br />One easy page.</h2>
-          <p class="lead">We placed all nine programs on a single page with a sticky anchor menu. Comparison is effortless — no clicking back and forth, no losing your place.</p>
-
-          <div class="bullets">
-            <div class="b-row"><span class="b-num">A</span><div><b>One template, nine times.</b><span>Photo, name, prose, what's included, request button.</span></div></div>
-            <div class="b-row"><span class="b-num">B</span><div><b>Alternating Ivory and Sage backgrounds.</b><span>So scrolling feels like turning pages, not falling forever.</span></div></div>
-            <div class="b-row"><span class="b-num">C</span><div><b>Sticky sub-nav at the top.</b><span>Pin any program. Jump back to any other in one tap.</span></div></div>
-            <div class="b-row"><span class="b-num">D</span><div><b>Mileage fee disclosed inline.</b><span>The footnote is part of the offer — not buried in the FAQ.</span></div></div>
-          </div>
-
-          <a class="ghost-link" href="services.html" onclick="try{(window.top||window).location.href=this.href;}catch(e){window.location.href=this.href;}return false;">Open the live Services page<span>→</span></a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 10 — HOW IT WORKS ============== -->
-    <section class="slide howitworks" id="slide-10" data-title="How it works">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">The pathway</div>
-          <h2 class="display-l">From the first call<br />to ongoing care.</h2>
-        </div>
-        <p class="lead">Borrowed in spirit from a self-assessment, but warmer — a conversation, not a form. Four discrete steps. Each one human-paced.</p>
-      </div>
-
-      <div class="hiw-flow">
-        <div class="hiw-step">
-          <div class="hiw-dot"></div>
-          <div class="hiw-num">01</div>
-          <h3>A free consultation.</h3>
-          <p>~30 minutes, by phone. With our on-staff RN if helpful. No script, no obligation.</p>
-        </div>
-        <div class="hiw-line"></div>
-        <div class="hiw-step">
-          <div class="hiw-dot"></div>
-          <div class="hiw-num">02</div>
-          <h3>A home assessment.</h3>
-          <p>~1 hour, in your loved one's home. Mobility, safety, routines, the small frictions that wear families down.</p>
-        </div>
-        <div class="hiw-line"></div>
-        <div class="hiw-step">
-          <div class="hiw-dot"></div>
-          <div class="hiw-num">03</div>
-          <h3>A care plan, tailored.</h3>
-          <p>Built from any of the nine programs. Revisable. Written down. Mailed to you within a few days.</p>
-        </div>
-        <div class="hiw-line"></div>
-        <div class="hiw-step">
-          <div class="hiw-dot"></div>
-          <div class="hiw-num">04</div>
-          <h3>Ongoing care.</h3>
-          <p>Same caregivers, monthly RN check-ins, no long contracts. The plan grows with the family.</p>
-        </div>
-      </div>
-
-      <p class="caption">No 17-question quiz. No "score your readiness." Just the four conversations every family will have with us anyway, sequenced.</p>
-    </section>
-
-    <!-- ============== SLIDE 11 — MOBILE ============== -->
-    <section class="slide mobile" id="slide-11" data-title="Mobile experience">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Mobile</div>
-          <h2 class="display-l">Designed phone-first.<br />Built for big tap targets.</h2>
-        </div>
-        <p class="lead">More than half of family members research senior care on a phone. We made the small screen the default — and the desktop the variant.</p>
-      </div>
-
-      <div class="phones">
-        <div class="phone">
-          <div class="phone-frame">
-            <div class="phone-notch"></div>
-            <div class="phone-screen">
-              <div class="ps-status"><span>9:41</span><span>·</span><span>●●●</span></div>
-              <div class="ps-header"><span class="ps-mark">J.A.P.</span><span class="ps-burger"></span></div>
-              <div class="ps-hero">
-                <div class="ps-eyebrow">CARE THAT HONORS</div>
-                <div class="ps-h1">A safer day. A more fulfilling life.</div>
-                <div class="ps-btn primary">Request a Consultation</div>
-                <div class="ps-btn ghost">See Our Services</div>
-              </div>
-              <div class="ps-trust">
-                <div class="ps-trust-cell"><b>25+</b><span>years</span></div>
-                <div class="ps-trust-cell"><b>9</b><span>programs</span></div>
-              </div>
-              <div class="ps-bar">Call us  ·  (205) 253-6537</div>
-            </div>
-          </div>
-          <div class="phone-cap">Home</div>
-        </div>
-
-        <div class="phone">
-          <div class="phone-frame">
-            <div class="phone-notch"></div>
-            <div class="phone-screen">
-              <div class="ps-status"><span>9:41</span><span>·</span><span>●●●</span></div>
-              <div class="ps-header"><span class="ps-mark">J.A.P.</span><span class="ps-burger"></span></div>
-              <div class="ps-services-hero">
-                <div class="ps-eyebrow on-dark">OUR CARE PROGRAMS</div>
-                <div class="ps-h1 on-dark">Nine ways we show up.</div>
-              </div>
-              <div class="ps-subnav">
-                <span class="ps-pill active">01</span><span class="ps-pill">02</span><span class="ps-pill">03</span><span class="ps-pill">04</span><span class="ps-pill">…</span>
-              </div>
-              <div class="ps-svc">
-                <div class="ps-svc-photo"></div>
-                <div class="ps-svc-body">
-                  <div class="ps-mini-eyebrow">PROGRAM 01</div>
-                  <div class="ps-svc-h">Good Morning To You.</div>
-                </div>
-              </div>
-              <div class="ps-bar">Call us  ·  (205) 253-6537</div>
-            </div>
-          </div>
-          <div class="phone-cap">Services</div>
-        </div>
-
-        <div class="phone">
-          <div class="phone-frame">
-            <div class="phone-notch"></div>
-            <div class="phone-screen">
-              <div class="ps-status"><span>9:41</span><span>·</span><span>●●●</span></div>
-              <div class="ps-header"><span class="ps-mark">J.A.P.</span><span class="ps-burger"></span></div>
-              <div class="ps-contact-hero">
-                <div class="ps-eyebrow">CONTACT</div>
-                <div class="ps-h1">We'd love to hear from you.</div>
-              </div>
-              <div class="ps-form">
-                <div class="ps-field"><span class="ps-lbl">YOUR NAME</span><div class="ps-input"></div></div>
-                <div class="ps-field"><span class="ps-lbl">PHONE</span><div class="ps-input"></div></div>
-                <div class="ps-btn primary tall">Send message</div>
-              </div>
-              <div class="ps-bar">Call us  ·  (205) 253-6537</div>
-            </div>
-          </div>
-          <div class="phone-cap">Contact</div>
-        </div>
-      </div>
-
-      <div class="mobile-ticks">
-        <span><span class="brass-tick"></span>56px touch targets</span>
-        <span><span class="brass-tick"></span>Click-to-call from anywhere</span>
-        <span><span class="brass-tick"></span>Sticky phone bar at the bottom</span>
-        <span><span class="brass-tick"></span>Text scales with system font size</span>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 12 — ACCESSIBILITY ============== -->
-    <section class="slide a11y" id="slide-12" data-title="Accessibility">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Accessibility</div>
-          <h2 class="display-l">Designed for the<br />people we serve.</h2>
-        </div>
-        <p class="lead">Accessibility is not an audit at the end. It's the brief — the average reader of this site is between 55 and 80, or their adult child on a phone. We designed for them first.</p>
-      </div>
-
-      <div class="a11y-table">
-        <div class="a11y-head">
-          <div>What we did</div>
-          <div>Why it matters</div>
-        </div>
-        <div class="a11y-row">
-          <div class="a11y-do">18px body type</div>
-          <div class="a11y-why">Easier to read for senior eyes. A point larger than the industry default.</div>
-        </div>
-        <div class="a11y-row">
-          <div class="a11y-do">WCAG AA Large contrast on all text</div>
-          <div class="a11y-why">No squinting at low-contrast grey. Every word passes.</div>
-        </div>
-        <div class="a11y-row">
-          <div class="a11y-do">56px tap targets on mobile</div>
-          <div class="a11y-why">Friendly to arthritic hands. Generous misses.</div>
-        </div>
-        <div class="a11y-row">
-          <div class="a11y-do">Click-to-call from every page</div>
-          <div class="a11y-why">One tap to talk to a human. The phone is the first feature.</div>
-        </div>
-        <div class="a11y-row">
-          <div class="a11y-do">No auto-playing video or carousels</div>
-          <div class="a11y-why">Predictable. Calm. In control. Nothing moves without permission.</div>
-        </div>
-        <div class="a11y-row">
-          <div class="a11y-do">Keyboard + screen-reader navigation</div>
-          <div class="a11y-why">Works for caregivers using assistive tech, and for anyone who can't see clearly today.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 13 — MOTION ============== -->
-    <section class="slide motion" id="slide-13" data-title="Motion">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Motion</div>
-          <h2 class="display-l">Subtle motion.<br />Never distracting.</h2>
-        </div>
-        <p class="lead">Every motion has a purpose. We never animate for the sake of animating.</p>
-      </div>
-
-      <div class="motion-strip">
-        <div class="m-card">
-          <div class="m-vis m-vis-fadeup"><span></span><span></span><span></span></div>
-          <div class="m-label">01 · Scroll fade-up</div>
-          <p class="m-desc">Text and cards rise 12px as they enter the viewport. 400ms ease-out.</p>
-        </div>
-        <div class="m-card">
-          <div class="m-vis m-vis-underline">
-            <span class="ul-word">Learn more</span>
-            <span class="ul-line"></span>
-          </div>
-          <div class="m-label">02 · Brass underline</div>
-          <p class="m-desc">Links grow a hairline from 0 to 100% width on hover. 250ms.</p>
-        </div>
-        <div class="m-card">
-          <div class="m-vis m-vis-header">
-            <span class="hsh-1"></span>
-            <span class="hsh-2"></span>
-          </div>
-          <div class="m-label">03 · Sticky header shrink</div>
-          <p class="m-desc">Header trims by 12px on scroll. Quietly gives more space to the content.</p>
-        </div>
-        <div class="m-card">
-          <div class="m-vis m-vis-photo"><div class="ph-img"></div></div>
-          <div class="m-label">04 · Photo reveal</div>
-          <p class="m-desc">Photographs fade in over 600ms after their headline lands.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 14 — PHOTOGRAPHY ============== -->
-    <section class="slide photo" id="slide-14" data-title="Photography">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">Photography</div>
-          <h2 class="display-l">Warm. Human. Earned.</h2>
-        </div>
-        <p class="lead">Custom-generated for J.A.P. using AI image generation — same aesthetic across every screen, exclusive to your brand. No stock photos. Every shot below is real, sitting on the live site today.</p>
-      </div>
-
-      <div class="moodboard">
-        <div class="mb-tile"><img src="assets/img/generated/heroPorch.webp" alt="Golden-hour porch" /><span>Golden-hour porch</span></div>
-        <div class="mb-tile"><img src="assets/img/generated/holdingHands.webp" alt="Hands holding hands" /><span>Hands holding hands</span></div>
-        <div class="mb-tile"><img src="assets/img/generated/groceryMeal.webp" alt="Kitchen-table breakfast" /><span>Kitchen-table breakfast</span></div>
-        <div class="mb-tile"><img src="assets/img/generated/sweetDreams.webp" alt="Quiet evening lamp" /><span>Quiet evening lamp</span></div>
-        <div class="mb-tile"><img src="assets/img/generated/walkingGarden.webp" alt="Garden walk" /><span>Garden walk</span></div>
-        <div class="mb-tile"><img src="assets/img/generated/careersHero.webp" alt="Caregiver and senior, laughing" /><span>Caregiver and senior, laughing</span></div>
-      </div>
-      <p class="caption" style="margin-top:24px;">Mood board references the editorial direction. Six tiles, six moments — none clinical.</p>
-    </section>
-
-    <!-- ============== SLIDE 15 — VS BENCHMARK ============== -->
-    <section class="slide versus" id="slide-15" data-title="Versus the benchmark">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">The comparison</div>
-          <h2 class="display-l">What we kept.<br />What we elevated.</h2>
-        </div>
-        <p class="lead">The benchmark gave us the information architecture. We borrowed the clarity. We left the aesthetics behind.</p>
-      </div>
-
-      <div class="vs-grid">
-        <figure class="vs-side benchmark">
-          <figcaption>
-            <span class="vs-tag">Benchmark</span>
-            <span class="vs-desc">Industry-standard senior care site</span>
-          </figcaption>
-          <div class="vs-frame">
-            <div class="vs-header generic"><span class="vs-logo"></span><span class="vs-nav"></span></div>
-            <div class="vs-hero generic">
-              <div class="vs-h">Caring for the ones you love.</div>
-              <div class="vs-sub">Compassionate in-home care services.</div>
-              <div class="vs-cta"></div>
-              <div class="vs-search"></div>
-            </div>
-            <div class="vs-row6">
-              <div class="vs-icon-card"><div class="vs-icon"></div></div>
-              <div class="vs-icon-card"><div class="vs-icon"></div></div>
-              <div class="vs-icon-card"><div class="vs-icon"></div></div>
-              <div class="vs-icon-card"><div class="vs-icon"></div></div>
-              <div class="vs-icon-card"><div class="vs-icon"></div></div>
-              <div class="vs-icon-card"><div class="vs-icon"></div></div>
-            </div>
-            <div class="vs-trust generic">
-              <span></span><span></span><span></span><span></span>
-            </div>
-          </div>
-        </figure>
-
-        <figure class="vs-side ours">
-          <figcaption>
-            <span class="vs-tag">Our design</span>
-            <span class="vs-desc">J.A.P Senior Services</span>
-          </figcaption>
-          <div class="vs-frame ours">
-            <div class="vs-header"><span class="vs-logo ours-logo">J.A.P.</span><span class="vs-pill"></span></div>
-            <div class="vs-hero ours">
-              <div class="vs-h ours-h">A safer day. <i>A more fulfilling life.</i></div>
-              <div class="vs-sub ours-sub">Family-owned, in-home senior care across Alabama.</div>
-              <div class="vs-cta ours-cta"></div>
-            </div>
-            <div class="vs-row6 ours-row6">
-              <div class="vs-photo-card"></div>
-              <div class="vs-photo-card"></div>
-              <div class="vs-photo-card"></div>
-              <div class="vs-photo-card"></div>
-              <div class="vs-photo-card"></div>
-              <div class="vs-photo-card"></div>
-            </div>
-            <div class="vs-trust ours-trust">
-              <span><b>25+</b>yrs</span>
-              <span><b>9</b>plans</span>
-              <span><b>RN</b>staff</span>
-              <span><b>100%</b>family</span>
-            </div>
-          </div>
-        </figure>
-      </div>
-
-      <div class="vs-callouts">
-        <div class="vs-callout"><b>Typography.</b><span>From generic sans to editorial serif → feels intentional.</span></div>
-        <div class="vs-callout"><b>Whitespace.</b><span>From dense rows to generous breathing room → feels premium.</span></div>
-        <div class="vs-callout"><b>Color.</b><span>From flat industry blue to your J.A.P. Navy paired with warm brass → unmistakably yours.</span></div>
-        <div class="vs-callout"><b>Photography.</b><span>From stock medical to editorial lifestyle → feels luxurious.</span></div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 16 — WHAT HAPPENS NEXT ============== -->
-    <section class="slide next" id="slide-16" data-title="What happens next">
-      <div class="head-row">
-        <div>
-          <div class="eyebrow">The process</div>
-          <h2 class="display-l">Three steps to launch.</h2>
-        </div>
-        <p class="lead">All copy on the site is drawn from your existing content. We've kept every fact and rewritten the prose to match the brand. You read it next; we refine; we ship.</p>
-      </div>
-
-      <div class="next-grid">
-        <div class="next-card">
-          <div class="next-num"><span class="ai-icon" data-icon="checklist" data-size="32" aria-hidden="true"></span>01</div>
-          <div class="next-week">Week 1</div>
-          <h3>You approve the design.</h3>
-          <p>Walk through the prototype. Flag what feels off. We refine until you're proud to send the link.</p>
-        </div>
-        <div class="next-card">
-          <div class="next-num"><span class="ai-icon" data-icon="mission" data-size="32" aria-hidden="true"></span>02</div>
-          <div class="next-week">Weeks 2 – 4</div>
-          <h3>We build it in Elementor.</h3>
-          <p>WordPress + Elementor, free tier. Every component is editable by your team forever, without a developer.</p>
-        </div>
-        <div class="next-card">
-          <div class="next-num"><span class="ai-icon" data-icon="star" data-size="32" aria-hidden="true"></span>03</div>
-          <div class="next-week">Week 5</div>
-          <h3>You launch.</h3>
-          <p>We train your team on updating content, swapping photography, posting stories. We stay on call for 30 days.</p>
-        </div>
-      </div>
-
-      <div class="next-note">
-        <span class="rule"></span>
-        <p>The path from this deck to a live site is five weeks. Most clients tell us it felt like one conversation.</p>
-        <span class="rule"></span>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 17 — ABOUT TASKFLO VA ============== -->
-    <section class="slide agency" id="slide-17" data-title="About TaskFlo VA">
-      <div class="agency-grid">
-        <div class="agency-left">
-          <div class="agency-logo">
-            <img class="al-img" src="assets/img/taskflova-logo.png" alt="TaskFlo VA" />
-          </div>
-          <p class="agency-tag">Home Care VA Solutions<br />Tailored to You.</p>
-
-          <div class="agency-stats">
-            <div class="ag-stat"><b class="tabular">1,000<span>+</span></b><span>Clients</span></div>
-            <div class="ag-stat"><b class="tabular">500<span>+</span></b><span>Press features</span></div>
-            <div class="ag-stat"><b class="tabular">100<span>%</span></b><span>Home-care focused</span></div>
-          </div>
-        </div>
-
-        <div class="agency-right">
-          <div class="eyebrow">The agency</div>
-          <h2 class="display-l">Designed by people<br />who know home care.</h2>
-          <p>TaskFlo VA was founded by Coach Michele and Coach Rob to serve home-care agencies specifically. We understand HIPAA. We understand the operational realities of running a senior-care business — payroll, scheduling, RN coverage, family liaison work.</p>
-          <p>We design websites that convert because we know what families ask before they call, and we write the page that answers them. Most of our clients see their first inbound lead within 48 hours of launch.</p>
-          <div class="agency-foot">
-            <div><span class="micro-caps">Founders</span><b>Coach Michele · Coach Rob</b></div>
-            <div><span class="micro-caps">Focus</span><b>Home-care exclusive</b></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== SLIDE 18 — THANK YOU ============== -->
-    <section class="slide thanks" id="slide-18" data-title="Thank you">
-      <div class="thanks-stack">
-        <div class="eyebrow brass">Thank you</div>
-        <h2 class="display-thanks">Love, dignity,<br />respect<span class="period">.</span></h2>
-
-        <a class="thanks-cta" href="index.html" data-gtm-event="deck_open_prototype" onclick="try{(window.top||window).location.href=this.href;}catch(e){window.location.href=this.href;}return false;">
-          <span>View the live prototype</span>
-          <span class="arrow">→</span>
+    <div class="cover-grid">
+      <!-- LEFT: Brand copy -->
+      <div class="cover-copy">
+        <div class="cover-eyebrow">February 2026</div>
+        <h1 class="cover-title">
+          <span class="line"><span>J.A.P. Senior</span></span>
+          <span class="line"><span>Care Services</span></span>
+        </h1>
+        <p>Two complete web design directions for J.A.P. Senior Care Services — built with the warmth, dignity, and clinical confidence the brand was founded on. Every page, every breakpoint, ready to ship.</p>
+        <a class="enter-btn" href="#deck" aria-label="Enter presentation">
+          <span class="enter-ring" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </span>
+          <span>Enter Presentation</span>
         </a>
-
-        <div class="thanks-contact">
-          <div class="tc-col">
-            <span class="micro-caps">Speak with us</span>
-            <a href="tel:+12025550112" class="tc-phone tabular">(202) 555-0112</a>
-          </div>
-          <div class="tc-divider"></div>
-          <div class="tc-col">
-            <span class="micro-caps">Or write to</span>
-            <a href="mailto:hello@taskflova.com" class="tc-email">hello@taskflova.com</a>
-          </div>
-        </div>
-
-        <div class="thanks-mark">
-          <img class="tm-img" src="assets/img/taskflova-logo.png" alt="TaskFlo VA" />
-          <span class="tm-sub">Home Care VA Solutions, Tailored to You.</span>
-        </div>
       </div>
-    </section>
 
+      <!-- RIGHT: Device composition -->
+      <div class="cover-stage" aria-hidden="true">
+        <div class="device device--laptop-2"><img src="assets/img/cover/laptop-2.png" alt="" /></div>
+        <div class="device device--laptop-1"><img src="assets/img/cover/laptop-1.png" alt="" /></div>
+        <div class="device device--mobile-2"><img src="assets/img/cover/mobile-2.png" alt="" /></div>
+        <div class="device device--mobile-1"><img src="assets/img/cover/mobile-1.png" alt="" /></div>
+      </div>
+    </div>
   </main>
 
-  <script src="assets/js/icons.js"></script>
-  <script src="assets/js/deck.js"></script>
+  <script>
+    // Two rAFs so the keyframes start from their declared "from" state.
+    // Without this the browser may already have committed the post-
+    // animation state before the rule cascades in.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.body.classList.add('is-ready');
+      });
+    });
+  </script>
 </body>
 </html>
