@@ -577,7 +577,13 @@ a.link-arrow.on-dark { color: var(--brass-100); }
 @media (max-width: 1080px) {
   .nav, .header-cta .btn-primary { display: none; }
   .header-burger { display: inline-flex; }
-  .header-inner { grid-template-columns: auto 1fr auto; gap: 24px; }
+  /* Two-column grid on mobile (logo + cta cluster) instead of
+     auto/1fr/auto. With .nav hidden, the desktop 3-column grid was
+     auto-placing .header-cta into the empty middle 1fr column,
+     dropping the burger right next to the logo. 1fr auto keeps the
+     burger pinned to the right edge with the logo on the left. */
+  .header-inner { grid-template-columns: 1fr auto; gap: 24px; }
+  .header-cta { justify-self: end; }
 }
 @media (max-width: 720px) {
   /* Hide the header phone CTA entirely on mobile. The persistent
