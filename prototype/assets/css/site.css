@@ -573,7 +573,22 @@ a.link-arrow.on-dark { color: var(--brass-100); }
 @media (max-width: 1080px) {
   .nav, .header-cta .btn-primary { display: none; }
   .header-burger { display: inline-flex; }
-  .header-inner { grid-template-columns: auto 1fr auto; }
+  .header-inner { grid-template-columns: auto 1fr auto; gap: 24px; }
+}
+@media (max-width: 720px) {
+  /* Compact the phone CTA to an icon-only button so the logo gets
+     breathing room from the right-hand cluster. The CALL US ANYTIME
+     text + number is collapsed; the icon still routes to tel:. */
+  .phone-cta {
+    padding: 0;
+    margin-right: 0;
+    border-right: 0;
+    gap: 0;
+  }
+  .phone-cta-text { display: none; }
+  .phone-cta-icon { width: 44px; height: 44px; }
+  .phone-cta-icon svg { width: 16px; height: 16px; }
+  .header-cta { gap: 14px; }
 }
 @media (max-width: 540px) {
   .phone-pill .text small { display: none; }
@@ -2586,8 +2601,59 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   .hero-quote-card p { font-size: 15px; }
 }
 @media (max-width: 900px) {
-  .home-hero[data-variant="editorial-split"] .split { grid-template-columns: 1fr; min-height: auto; }
-  .home-hero[data-variant="editorial-split"] .right img { min-height: 420px; }
+  /* Mobile editorial-split — text content first, photo flows below.
+     Strip the absolute positioning + mask gradient that worked for
+     a desktop two-column layout (and was leaving .right with no
+     intrinsic height on mobile, so the hero photo simply wasn't
+     showing). Photo now renders in normal flow with a 4:5 aspect
+     ratio. Mirrors the design-2 hero behaviour on phones. */
+  .home-hero[data-variant="editorial-split"] .split {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .home-hero[data-variant="editorial-split"] .right {
+    position: relative;
+    width: 100%;
+    margin-top: clamp(28px, 6vw, 48px);
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  .home-hero[data-variant="editorial-split"] .right img {
+    min-height: 0;
+  }
+  .home-hero[data-variant="editorial-split"] .right .hero-photo-stage {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    max-height: 70svh;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .home-hero[data-variant="editorial-split"] .right .hero-photo-zoom {
+    position: absolute;
+    inset: 0;
+  }
+  .home-hero[data-variant="editorial-split"] .right .hero-photo {
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+  }
+  /* Re-anchor the quote card so it overlays the bottom of the photo
+     on mobile instead of free-floating into whitespace. */
+  .home-hero[data-variant="editorial-split"] .hero-quote-card {
+    left: clamp(16px, 4vw, 24px);
+    bottom: clamp(16px, 4vw, 28px);
+    max-width: 280px;
+  }
+  /* Tighten the .left padding on mobile so the headline + CTAs use
+     more of the screen width and don't sit in a narrow column. */
+  .home-hero[data-variant="editorial-split"] .left {
+    padding: clamp(24px, 6vw, 40px) clamp(20px, 5vw, 32px);
+  }
+  .home-hero[data-variant="editorial-split"] .left h1 {
+    max-width: none;
+  }
 }
 
 /* Variant C: quiet typographic */
