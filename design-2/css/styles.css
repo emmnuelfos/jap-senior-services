@@ -531,6 +531,22 @@ h1,h2,h3,h4 { font-family: var(--f-display); color: var(--navy); line-height: 1.
   .hero__photo { border-radius: 44% 44% 42% 42% / 10% 10% 6% 6%; }
   .btn { width: 100%; }
   .hero .btn-row .btn, .services-cta .btn, .cta-final .btn { width: auto; }
+  /* Hero CTAs share one line on mobile per client direction — flex
+     them equally and tighten the padding/font so both labels fit
+     comfortably side-by-side. */
+  .hero .btn-row {
+    flex-wrap: nowrap;
+    gap: .55rem;
+  }
+  .hero .btn-row .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: .9rem .7rem;
+    font-size: .9rem;
+    letter-spacing: 0;
+    text-align: center;
+  }
+  .hero .btn-row .btn .ico { flex-shrink: 0; }
   .footer__bar .container { flex-direction: column; text-align:center; }
 }
 
