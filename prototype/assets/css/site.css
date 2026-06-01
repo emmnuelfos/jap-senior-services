@@ -580,19 +580,14 @@ a.link-arrow.on-dark { color: var(--brass-100); }
   .header-inner { grid-template-columns: auto 1fr auto; gap: 24px; }
 }
 @media (max-width: 720px) {
-  /* Compact the phone CTA to an icon-only button so the logo gets
-     breathing room from the right-hand cluster. The CALL US ANYTIME
-     text + number is collapsed; the icon still routes to tel:. */
-  .phone-cta {
-    padding: 0;
-    margin-right: 0;
-    border-right: 0;
-    gap: 0;
-  }
-  .phone-cta-text { display: none; }
-  .phone-cta-icon { width: 44px; height: 44px; }
-  .phone-cta-icon svg { width: 16px; height: 16px; }
-  .header-cta { gap: 14px; }
+  /* Hide the header phone CTA entirely on mobile. The persistent
+     "Call us · (205) 253-6537" bar pinned to the bottom of the
+     viewport already provides tap-to-call, so showing the same
+     affordance up top duplicates the action and leaves a stray
+     icon next to the differently-shaped burger. Logo on the left
+     + burger on the right reads as a clean mobile header. */
+  .phone-cta { display: none; }
+  .header-cta { gap: 0; }
 }
 @media (max-width: 540px) {
   .phone-pill .text small { display: none; }
