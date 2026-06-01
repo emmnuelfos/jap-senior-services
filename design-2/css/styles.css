@@ -510,7 +510,9 @@ h1,h2,h3,h4 { font-family: var(--f-display); color: var(--navy); line-height: 1.
   .nav .btn { display:flex; margin-top: .6rem; }
 
   .hero__grid { grid-template-columns: 1fr; gap: 2.5rem; }
-  .hero__media { max-width: 460px; margin-inline: auto; order: -1; }
+  /* Mobile order: text content first, then image. Drops the
+     previous `order: -1` that flipped the media above the copy. */
+  .hero__media { max-width: 460px; margin-inline: auto; }
   .dedication__grid { grid-template-columns: 1fr; }
   .dedication__media { max-width: 440px; margin-inline: auto; }
   .stats { grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; }
