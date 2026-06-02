@@ -131,7 +131,17 @@ h1, h2, h3, h4, h5 {
   display: inline-block;
 }
 .eyebrow.no-tick::before { display: none; }
-.eyebrow.on-dark { color: var(--brass-100); }
+/* Dark-surface eyebrows flip to Brand Yellow per Brand Guide and
+   WCAG: Brand Red on Deep Navy is ~2:1 (fails AA), Brand Yellow on
+   Deep Navy is ~13:1. The ::before tick inherits currentColor, so
+   the bar flips with the text. */
+.eyebrow.on-dark { color: var(--yellow); }
+/* Lottie icon inside an on-dark eyebrow gets a filter chain that
+   tints the (originally navy + red) glyph yellow so it reads on
+   the navy band. Matches the stats-icon / step-icon treatment. */
+.eyebrow.on-dark .ai-icon {
+  filter: brightness(0) saturate(100%) invert(98%) sepia(53%) saturate(4392%) hue-rotate(355deg) brightness(110%) contrast(105%);
+}
 
 .tabular { font-variant-numeric: tabular-nums; }
 
@@ -266,7 +276,9 @@ a.link-arrow::after {
 a.link-arrow:hover::after,
 a.link-arrow:focus-visible::after { transform: scaleX(1); }
 
-a.link-arrow.on-dark { color: var(--brass-100); }
+/* Brand Yellow on dark surfaces for the same WCAG reason as the
+   on-dark eyebrow — keeps link-arrows readable on navy bands. */
+a.link-arrow.on-dark { color: var(--yellow); }
 
 /* Focus rings (3px brass, 2px offset) */
 :focus-visible {
@@ -1768,7 +1780,11 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--brass);
+  /* Brand Yellow per Brand Guide — Brand Red on the navy stats band
+     was failing WCAG contrast (~2:1). Yellow on the same surface is
+     ~13:1 and matches the band's existing yellow accent rhythm
+     (eyebrow tick, stats-icon ring, "+", "%" suffix). */
+  color: var(--yellow);
 }
 .stats-desc {
   font-family: var(--font-body);
