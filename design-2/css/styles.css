@@ -651,8 +651,15 @@ h1,h2,h3,h4 { font-family: var(--f-display); color: var(--navy); line-height: 1.
 .post__link .ico { width: 1em; height: 1em; transition: transform var(--t) var(--ease); }
 .post:hover .post__link .ico { transform: translateX(5px); }
 
-/* features 5-up (careers) + svg feature icon */
-.features--5 { grid-template-columns: repeat(5, 1fr); }
+/* features 5-up (careers) — editorial 3 + 2 centered layout instead
+   of 5-in-a-row, which made every card narrow + crammed. Built on a
+   6-column grid: the first 3 cards span 2 columns each (one row),
+   the last 2 cards span 3 columns each (centered second row). Each
+   card gets ~67% more horizontal room and the section reads as a
+   proper editorial spread. */
+.features--5 { grid-template-columns: repeat(6, 1fr); }
+.features--5 > .feature { grid-column: span 2; }
+.features--5 > .feature:nth-last-child(-n+2) { grid-column: span 3; }
 .feature__icon--svg { display: grid; place-items: center; border-radius: 16px; background: rgba(19,56,190,.08); color: var(--blue); }
 .feature__icon--svg svg { width: 32px; height: 32px; }
 
@@ -711,7 +718,11 @@ h1,h2,h3,h4 { font-family: var(--f-display); color: var(--navy); line-height: 1.
 /* ---------- Inner-page responsive ---------- */
 @media (max-width: 1024px) {
   .values { grid-template-columns: repeat(2, 1fr); }
+  /* Drop the 6-col span trick on tablets — a plain 3-col grid wraps
+     the 5 cards cleanly (3 + 2 with the trailing two left-aligned). */
   .features--5 { grid-template-columns: repeat(3, 1fr); }
+  .features--5 > .feature,
+  .features--5 > .feature:nth-last-child(-n+2) { grid-column: auto; }
   .blog-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {
