@@ -1444,6 +1444,15 @@ body.cards-photo-left .service-card .body { padding: 24px; }
 [data-reveal="letters"] {
   perspective: 800px;
 }
+/* Word group wrapper for letter-by-letter reveals. Without this the
+   per-letter inline-blocks would let the browser break a line in the
+   middle of a word (e.g. "Compassiona / te"). The wrapper keeps the
+   letters inside a single word glued together, so the line only ever
+   wraps at the real spaces between words. */
+[data-reveal="letters"] .rv-letter-word {
+  display: inline-block;
+  white-space: nowrap;
+}
 [data-reveal="letters"] .rv-letter {
   display: inline-block;
   opacity: 0;

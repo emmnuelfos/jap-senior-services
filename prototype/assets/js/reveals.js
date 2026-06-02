@@ -127,31 +127,46 @@
   }
 
   // Walk a node tree and replace text nodes with LETTER spans.
-  // Whitespace is preserved as text nodes between letters (NOT wrapped).
-  // Each letter span keeps a non-breaking layout via inline-block, and
-  // sets a --letter-i CSS variable for its absolute index.
+  // Whitespace is preserved as text nodes between WORDS (NOT wrapped).
+  // Letters inside a word are grouped under a .rv-letter-word wrapper
+  // that holds `display: inline-block; white-space: nowrap` so the
+  // browser cannot break the line in the middle of a word — only at
+  // the spaces between word groups. Each letter span keeps a
+  // non-breaking layout via inline-block, and sets a --letter-i CSS
+  // variable for its absolute index across the whole element.
   function wrapTextNodesByLetter(node, counter) {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent;
       if (!text) return;
       const frag = document.createDocumentFragment();
-      for (const ch of text) {
-        if (/\s/.test(ch)) {
-          frag.appendChild(document.createTextNode(ch));
-        } else {
+      // Split on whitespace boundaries, keeping the whitespace as its
+      // own token so it can stay as a plain text node between groups.
+      const parts = text.split(/(\s+)/);
+      for (const part of parts) {
+        if (!part) continue;
+        if (/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+          continue;
+        }
+        // This is a word — wrap it in a nowrap group so the letters
+        // inside it can never be split across a line break.
+        const wordWrap = document.createElement('span');
+        wordWrap.className = 'rv-letter-word';
+        for (const ch of part) {
           const span = document.createElement('span');
           span.className = 'rv-letter';
           span.style.setProperty('--letter-i', counter.n++);
           span.textContent = ch;
-          frag.appendChild(span);
+          wordWrap.appendChild(span);
         }
+        frag.appendChild(wordWrap);
       }
       node.parentNode.replaceChild(frag, node);
       return;
     }
     if (node.nodeType !== Node.ELEMENT_NODE) return;
     if (node.tagName === 'BR') return;
-    if (node.classList && node.classList.contains('rv-letter')) return;
+    if (node.classList && (node.classList.contains('rv-letter') || node.classList.contains('rv-letter-word'))) return;
     Array.from(node.childNodes).forEach(child => wrapTextNodesByLetter(child, counter));
   }
 
