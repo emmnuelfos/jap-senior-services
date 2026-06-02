@@ -345,7 +345,10 @@ a.link-arrow.on-dark { color: var(--brass-100); }
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 32px;
+  /* Generous gap so the logo, primary nav and CTA cluster aren't
+     squeezed together — each gets its own breathing room across all
+     desktop widths. */
+  gap: clamp(36px, 4vw, 72px);
   padding-block: 16px;
 }
 /* No padding-block change on scroll — only the logo shrinks slightly
@@ -536,9 +539,9 @@ a.link-arrow.on-dark { color: var(--brass-100); }
   white-space: nowrap;
 }
 
-/* Header inner: don't squeeze the CTA */
-.header-inner { gap: 28px; }
-.header-cta { gap: 12px; flex-wrap: nowrap; }
+/* Header inner: don't squeeze the CTA. Keeps the clamp from the
+   base rule so the gap scales with the viewport. */
+.header-cta { gap: 14px; flex-wrap: nowrap; }
 
 /* ---------- BUTTON ARROW HELPER ---------- */
 .btn-arrow {
@@ -2405,7 +2408,10 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
 }
 .home-hero[data-variant="editorial-split"] .split {
   display: grid;
-  grid-template-columns: 1.05fr 1fr;
+  /* Even 1:1 columns so the photo gets room and the text doesn't sit
+     in a too-narrow column with an awkward gap between content and
+     image. */
+  grid-template-columns: 1fr 1fr;
   align-items: stretch;
   min-height: 0;
 }
@@ -2413,12 +2419,21 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(32px, 5vw, 64px) clamp(40px, 5vw, 72px) clamp(32px, 5vw, 64px) clamp(48px, 6vw, 96px);
+  /* Tightened right padding so the headline + CTAs sit closer to the
+     photo edge — the wide right gap the client called out was mostly
+     this padding compounding with the mask gradient. */
+  padding: clamp(32px, 5vw, 64px) clamp(20px, 3vw, 40px) clamp(32px, 5vw, 64px) clamp(48px, 6vw, 96px);
 }
 .home-hero[data-variant="editorial-split"] .left h1 {
   color: var(--forest);
-  max-width: 14ch;
-  font-size: clamp(36px, 4.8vw, 64px);
+  /* No artificial max-width — the column itself is the constraint
+     now. The previous 14ch cap forced "Compassionate" alone on one
+     line; removing it lets "Compassionate Home Care" sit on a
+     single line at every reasonable desktop width while the column
+     still wraps the italic part naturally on its own break. */
+  max-width: none;
+  font-size: clamp(34px, 4.4vw, 60px);
+  line-height: 1.05;
 }
 .home-hero[data-variant="editorial-split"] .right {
   position: relative;
@@ -2485,21 +2500,22 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
    translates on mousemove via --mx / --my custom properties set on the
    whole hero section, so the parallax fires from anywhere in the hero. */
 .home-hero[data-variant="editorial-split"] .right {
+  /* Sharpened from 0–36% to 0–18% so the photo reaches its full
+     opacity much closer to the column edge, closing the empty gap
+     the client flagged between the copy and the image. */
   -webkit-mask-image: linear-gradient(to right,
     rgba(0,0,0,0)    0%,
-    rgba(0,0,0,0.15) 6%,
-    rgba(0,0,0,0.45) 14%,
-    rgba(0,0,0,0.75) 22%,
-    rgba(0,0,0,0.95) 30%,
-    #000             36%,
+    rgba(0,0,0,0.30) 4%,
+    rgba(0,0,0,0.65) 9%,
+    rgba(0,0,0,0.90) 14%,
+    #000             18%,
     #000             100%);
           mask-image: linear-gradient(to right,
     rgba(0,0,0,0)    0%,
-    rgba(0,0,0,0.15) 6%,
-    rgba(0,0,0,0.45) 14%,
-    rgba(0,0,0,0.75) 22%,
-    rgba(0,0,0,0.95) 30%,
-    #000             36%,
+    rgba(0,0,0,0.30) 4%,
+    rgba(0,0,0,0.65) 9%,
+    rgba(0,0,0,0.90) 14%,
+    #000             18%,
     #000             100%);
 }
 .home-hero[data-variant="editorial-split"] .right .hero-photo-stage {
