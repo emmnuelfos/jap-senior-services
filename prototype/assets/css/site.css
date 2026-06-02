@@ -139,7 +139,10 @@ h1, h2, h3, h4, h5 {
 .section-tight { padding-block: clamp(48px, 6vw, 80px); }
 
 /* The value strip sits tight below the hero so both fit in one viewport fold */
-.value-strip-section { padding-block: 0; }
+/* Generous top padding so the Why-J.A.P. block doesn't kiss the
+   bottom of the hero — gives the eye a clear pause between the
+   hero composition and the value-strip rhythm. */
+.value-strip-section { padding-block: clamp(72px, 9vw, 128px) 0; }
 .value-strip-section .container--wide { max-width: 1600px; padding-inline: clamp(20px, 3vw, 48px); }
 .bg-ivory { background: var(--ivory); }
 .bg-ivory-100 { background: var(--ivory-100); }
@@ -2503,19 +2506,28 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   /* Sharpened from 0–36% to 0–18% so the photo reaches its full
      opacity much closer to the column edge, closing the empty gap
      the client flagged between the copy and the image. */
+  /* Smoother left-to-right fade per client direction — more stops,
+     longer ramp, so the photo eases in cleanly without the abrupt
+     edge the sharper 0–18 % version had. */
   -webkit-mask-image: linear-gradient(to right,
-    rgba(0,0,0,0)    0%,
-    rgba(0,0,0,0.30) 4%,
-    rgba(0,0,0,0.65) 9%,
-    rgba(0,0,0,0.90) 14%,
-    #000             18%,
+    rgba(0,0,0,0.00)  0%,
+    rgba(0,0,0,0.08)  4%,
+    rgba(0,0,0,0.22)  8%,
+    rgba(0,0,0,0.42) 13%,
+    rgba(0,0,0,0.62) 18%,
+    rgba(0,0,0,0.80) 23%,
+    rgba(0,0,0,0.92) 28%,
+    #000             34%,
     #000             100%);
           mask-image: linear-gradient(to right,
-    rgba(0,0,0,0)    0%,
-    rgba(0,0,0,0.30) 4%,
-    rgba(0,0,0,0.65) 9%,
-    rgba(0,0,0,0.90) 14%,
-    #000             18%,
+    rgba(0,0,0,0.00)  0%,
+    rgba(0,0,0,0.08)  4%,
+    rgba(0,0,0,0.22)  8%,
+    rgba(0,0,0,0.42) 13%,
+    rgba(0,0,0,0.62) 18%,
+    rgba(0,0,0,0.80) 23%,
+    rgba(0,0,0,0.92) 28%,
+    #000             34%,
     #000             100%);
 }
 .home-hero[data-variant="editorial-split"] .right .hero-photo-stage {
