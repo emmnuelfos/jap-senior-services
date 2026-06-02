@@ -161,7 +161,10 @@ h1,h2,h3,h4 { font-family: var(--f-display); color: var(--navy); line-height: 1.
   transition: height var(--t), background var(--t), box-shadow var(--t), border-color var(--t);
 }
 .header.scrolled { height: 70px; background: rgba(252,251,247,.92); box-shadow: var(--sh-sm); border-bottom-color: var(--line); }
-.header__inner { display: flex; align-items: center; gap: 1.5rem; width: 100%; }
+/* Match design-1's breathing room — generous gap between brand,
+   nav, and the right-hand CTA cluster so the three groups don't
+   crowd each other at desktop widths. */
+.header__inner { display: flex; align-items: center; gap: clamp(36px, 4vw, 72px); width: 100%; }
 .brand { display: flex; align-items: center; flex-shrink: 0; margin-right: auto; }
 .brand img { height: 48px; width: auto; transition: height var(--t); }
 .header.scrolled .brand img { height: 42px; }
