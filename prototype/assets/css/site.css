@@ -332,8 +332,16 @@ a.link-arrow.on-dark { color: var(--brass-100); }
 
 /* ---------- 7. HEADER ---------- */
 .site-header {
-  position: sticky;
+  /* Fixed nav (was sticky) so it doesn't take flow space — the
+     homepage editorial-split hero can now reach a true 100 vh
+     without the nav pushing it past the fold. The nav overlays the
+     first ~90 px of the hero (which is fine since hero content is
+     vertically centered) and on inner pages the .page-hero gets a
+     matching padding-top so the title isn't hidden underneath. */
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 50;
   background: var(--ivory);
   border-bottom: var(--hairline);
@@ -2122,6 +2130,11 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   align-items: flex-end;
   overflow: hidden;
   isolation: isolate;
+  /* Nav is now position: fixed, so push the page-hero content down
+     by approximately the nav height so the H1 + eyebrow aren't
+     tucked behind the floating bar. clamp keeps it reasonable on
+     small mobile headers (where the logo shrinks). */
+  padding-top: clamp(80px, 8vw, 110px);
 }
 .page-hero.short { min-height: 44vh; }
 .page-hero.shortest { min-height: 36vh; }
