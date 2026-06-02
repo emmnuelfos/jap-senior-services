@@ -2465,22 +2465,24 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
 }
 .home-hero[data-variant="editorial-split"] .left h1 {
   color: var(--forest);
-  /* No artificial max-width — the column itself is the constraint
-     now. The previous 14ch cap forced "Compassionate" alone on one
-     line; removing it lets "Compassionate Home Care" sit on a
-     single line at every reasonable desktop width while the column
-     still wraps the italic part naturally on its own break. */
   max-width: none;
-  font-size: clamp(34px, 4.4vw, 60px);
-  line-height: 1.05;
-  /* text-wrap: balance distributes words evenly across lines so the
-     headline can't strand a single short word ("Care") on its own.
-     Without it, the browser breaks at the LAST possible space —
-     "Compassionate Home / Care" — when the column can't hold all
-     three words. With balance it prefers "Compassionate / Home Care"
-     (13 + 8 chars) over "Compassionate Home / Care" (17 + 4 chars).
-     pretty is the fallback for browsers that don't ship balance yet
-     — it still avoids single-word last-lines. */
+  /* Font max reduced from 60 → 48 so "Compassionate Home Care" fits
+     on a single line at typical desktop widths (≥1280px). At 60px
+     the phrase is ~700px wide and the .left content column is only
+     ~660px on a 1600px viewport, so the browser was forced to wrap
+     "Care" onto its own line. At 48px the same phrase is ~560px
+     wide and clears the column comfortably. The italic subtitle
+     ("Rooted in Love, Dignity, and Respect.") is 38 chars and still
+     wraps to two lines on narrower viewports — that's expected and
+     reads as a deliberate two-line subtitle, not an orphan. */
+  font-size: clamp(32px, 3.4vw, 48px);
+  line-height: 1.08;
+  /* text-wrap: balance is kept as a safety net — on screens narrow
+     enough that even the smaller font can't hold the phrase on one
+     line, it distributes words evenly so we get
+     "Compassionate / Home Care" (13 + 8 chars) instead of
+     "Compassionate Home / Care" (17 + 4 chars). pretty is the
+     fallback for older Chromium. */
   text-wrap: pretty;
   text-wrap: balance;
 }
