@@ -2148,9 +2148,10 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
   isolation: isolate;
   /* Nav is now position: fixed, so push the page-hero content down
      by approximately the nav height so the H1 + eyebrow aren't
-     tucked behind the floating bar. clamp keeps it reasonable on
-     small mobile headers (where the logo shrinks). */
-  padding-top: clamp(80px, 8vw, 110px);
+     tucked behind the floating bar. Mobile floor bumped from 80→104
+     because the mobile nav (60px logo + ~24px padding) is ~84-90px
+     and 80px left no buffer — the eyebrow was getting clipped. */
+  padding-top: clamp(104px, 10vw, 128px);
 }
 .page-hero.short { min-height: 44vh; }
 .page-hero.shortest { min-height: 36vh; }
@@ -2724,9 +2725,16 @@ main section > [data-reveal]:nth-child(5) { --rv-delay: 360ms; }
     max-width: 280px;
   }
   /* Tighten the .left padding on mobile so the headline + CTAs use
-     more of the screen width and don't sit in a narrow column. */
+     more of the screen width and don't sit in a narrow column.
+     Top padding must clear the fixed site-header (logo 60px + ~24px
+     vertical padding ≈ 84-90px), otherwise the eyebrow and the top
+     of the H1 sit behind the opaque ivory nav — which on desktop is
+     masked by the .home-hero being a true flex parent that vertically
+     centers content in 100vh, but on mobile the .split grid stacks
+     and .left is sized to its content height, so no implicit centering
+     pushes content below the nav. */
   .home-hero[data-variant="editorial-split"] .left {
-    padding: clamp(24px, 6vw, 40px) clamp(20px, 5vw, 32px);
+    padding: clamp(104px, 24vw, 128px) clamp(20px, 5vw, 32px) clamp(24px, 6vw, 40px);
   }
   .home-hero[data-variant="editorial-split"] .left h1 {
     max-width: none;
