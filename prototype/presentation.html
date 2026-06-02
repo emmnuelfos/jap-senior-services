@@ -329,9 +329,18 @@
        transforms ready to paste back into the static stylesheet.
        Hidden completely in normal viewing.
        ================================================================= */
-    body.is-edit .device { cursor: move; outline: 1px dashed transparent; }
+    /* Force the four cover devices to their resting state in edit
+       mode regardless of what the entrance keyframes were doing.
+       opacity: 1 / animation: none with !important so neither the
+       static .device { opacity: 0 } base rule nor the body.is-ready
+       deviceFly* keyframes can override and re-hide them. */
+    body.is-edit .device {
+      cursor: move;
+      outline: 1px dashed transparent;
+      opacity: 1 !important;
+      animation: none !important;
+    }
     body.is-edit .device.is-selected { outline: 2px dashed var(--accent); outline-offset: 6px; }
-    body.is-edit .device, body.is-edit .device * { animation: none !important; }
     .edit-hud {
       position: fixed;
       top: 18px;
