@@ -17,6 +17,7 @@
   // "Home" anchors the brand-logo click so we don't duplicate it as
   // a nav link — but it is present in the mobile drawer.
   const NAV = [
+    { href: 'index.html',                 label: 'Home' },
     { href: 'about.html',                 label: 'About Us' },
     { href: 'services.html',              label: 'Services' },
     { href: 'blogs.html',                 label: 'Blog / Resources' },
@@ -65,7 +66,6 @@
         <button class="drawer-close" aria-label="Close menu"></button>
       </div>
       <nav class="drawer-nav" aria-label="Mobile primary">
-        <a href="index.html">Home</a>
         ${NAV.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}
       </nav>
       <div class="drawer-foot">

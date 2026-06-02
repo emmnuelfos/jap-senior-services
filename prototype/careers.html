@@ -87,8 +87,19 @@
       </div>
     </section>
     <style>
-      .why-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
-      @media (max-width: 1200px) { .why-grid { grid-template-columns: repeat(3, 1fr); } }
+      /* Editorial 3+2 layout for the 5 "Why work at J.A.P." cards.
+         Six-column grid where the first 3 cards each span 2 cols
+         (row 1) and the last 2 cards each span 3 cols centered
+         (row 2). Beats the previous repeat(5, 1fr) crush that
+         narrowed every card into a thin column. */
+      .why-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; }
+      .why-grid > .value-card { grid-column: span 2; }
+      .why-grid > .value-card:nth-last-child(-n+2) { grid-column: span 3; }
+      @media (max-width: 1200px) {
+        .why-grid { grid-template-columns: repeat(3, 1fr); }
+        .why-grid > .value-card,
+        .why-grid > .value-card:nth-last-child(-n+2) { grid-column: auto; }
+      }
       @media (max-width: 800px)  { .why-grid { grid-template-columns: repeat(2, 1fr); } }
       @media (max-width: 540px)  { .why-grid { grid-template-columns: 1fr; } }
     </style>
