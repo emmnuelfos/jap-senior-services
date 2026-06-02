@@ -320,6 +320,89 @@
       .device,
       .brand { opacity: 1 !important; transform: none !important; }
     }
+
+    /* =================================================================
+       EDIT MODE  (only loaded when URL contains ?edit=1)
+       Lets the operator click → drag, scroll → scale, shift+scroll →
+       rotate, arrow keys → nudge each device into the composition they
+       want. The "Copy CSS" button in the HUD dumps the four .device--*
+       transforms ready to paste back into the static stylesheet.
+       Hidden completely in normal viewing.
+       ================================================================= */
+    body.is-edit .device { cursor: move; outline: 1px dashed transparent; }
+    body.is-edit .device.is-selected { outline: 2px dashed var(--accent); outline-offset: 6px; }
+    body.is-edit .device, body.is-edit .device * { animation: none !important; }
+    .edit-hud {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      width: 320px;
+      background: rgba(4, 12, 32, 0.94);
+      color: #fff;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 11.5px;
+      line-height: 1.45;
+      z-index: 1000;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,.6);
+    }
+    .edit-hud h4 {
+      margin: 0 0 12px;
+      font-family: var(--f-display);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .edit-hud .hud-row {
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .edit-hud .hud-row:last-of-type { border-bottom: 0; }
+    .edit-hud .hud-row b {
+      color: #FFC7C7;
+      font-weight: 700;
+      min-width: 78px;
+    }
+    .edit-hud .hud-row span { color: rgba(255,255,255,0.85); }
+    .edit-hud .hud-row.is-selected { background: rgba(255,107,107,0.12); margin: 0 -10px; padding: 6px 10px; border-radius: 4px; border-color: transparent; }
+    .edit-hud .hud-copy {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      padding: 9px 14px;
+      border-radius: 6px;
+      margin-top: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: background 200ms var(--ease);
+    }
+    .edit-hud .hud-copy:hover { background: #ff8080; }
+    .edit-hud .hud-help {
+      margin: 12px 0 0;
+      font-size: 10.5px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.55);
+    }
+    .edit-hud .hud-help kbd {
+      background: rgba(255,255,255,0.12);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: inherit;
+      font-size: 10px;
+    }
   </style>
 </head>
 <body>
@@ -363,14 +446,180 @@
   </main>
 
   <script>
-    // Two rAFs so the keyframes start from their declared "from" state.
-    // Without this the browser may already have committed the post-
-    // animation state before the rule cascades in.
-    requestAnimationFrame(() => {
+    // ----------------------------------------------------------------
+    // Default entrance: two rAFs so the keyframes start from their
+    // declared "from" state. Without this the browser may already have
+    // committed the post-animation state before the rule cascades in.
+    // ----------------------------------------------------------------
+    const EDIT_MODE = new URLSearchParams(location.search).has('edit');
+
+    if (!EDIT_MODE) {
       requestAnimationFrame(() => {
-        document.body.classList.add('is-ready');
+        requestAnimationFrame(() => {
+          document.body.classList.add('is-ready');
+        });
       });
-    });
+    } else {
+      bootEditor();
+    }
+
+    // ================================================================
+    // DEVICE EDITOR
+    // Lets the operator click a device to select, drag to translate,
+    // scroll-wheel to scale, shift+scroll to rotateZ, arrow keys to
+    // nudge, [ ] to rotate, + / - to scale. The Copy CSS button dumps
+    // ready-to-paste rules for the four .device--* selectors.
+    // ================================================================
+    function bootEditor() {
+      document.body.classList.add('is-edit');
+
+      const devices = Array.from(document.querySelectorAll('.device'));
+      const state = new Map();
+
+      // Each device's base rotation (the rotateY / rotateZ already in
+      // the static CSS) is preserved so the 3-D tilt stays correct as
+      // the operator translates / scales / rotates around it.
+      const BASE_ROT = {
+        'laptop-1': 'rotateY(-6deg)',
+        'laptop-2': 'rotateY(8deg)',
+        'mobile-1': 'rotateZ(-4deg)',
+        'mobile-2': 'rotateZ(6deg)',
+      };
+
+      devices.forEach(d => {
+        const key = ['laptop-1','laptop-2','mobile-1','mobile-2']
+          .find(k => d.classList.contains('device--' + k));
+        state.set(d, { key, tx: 0, ty: 0, scale: 1, rotZ: 0, baseRot: BASE_ROT[key] });
+        apply(d);
+        d.addEventListener('mousedown', startDrag);
+        d.addEventListener('wheel', handleWheel, { passive: false });
+      });
+
+      // The .device pseudo-children animate in CSS by default. Cancel
+      // their animations and float their opacity to 1 so they are
+      // immediately visible at their resting position.
+      devices.forEach(d => { d.style.opacity = '1'; d.style.animation = 'none'; });
+
+      let selected = devices[0];
+      selected.classList.add('is-selected');
+
+      function apply(d) {
+        const s = state.get(d);
+        d.style.transform = `translate(${s.tx}px, ${s.ty}px) scale(${s.scale}) ${s.baseRot} rotateZ(${s.rotZ}deg)`;
+        renderHUD();
+      }
+
+      function select(d) {
+        devices.forEach(el => el.classList.toggle('is-selected', el === d));
+        selected = d;
+        renderHUD();
+      }
+
+      // --- DRAG ---
+      let drag = null;
+      function startDrag(e) {
+        if (e.button !== 0) return;
+        const d = e.currentTarget;
+        select(d);
+        const s = state.get(d);
+        drag = { d, x: e.clientX, y: e.clientY, tx: s.tx, ty: s.ty };
+        e.preventDefault();
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', endDrag);
+      }
+      function onDrag(e) {
+        if (!drag) return;
+        const s = state.get(drag.d);
+        s.tx = drag.tx + (e.clientX - drag.x);
+        s.ty = drag.ty + (e.clientY - drag.y);
+        apply(drag.d);
+      }
+      function endDrag() {
+        drag = null;
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', endDrag);
+      }
+
+      // --- WHEEL (scale / shift+scale = rotate) ---
+      function handleWheel(e) {
+        const d = e.currentTarget;
+        select(d);
+        e.preventDefault();
+        const s = state.get(d);
+        const dir = e.deltaY < 0 ? 1 : -1;
+        if (e.shiftKey) {
+          s.rotZ = +(s.rotZ + dir * 1.5).toFixed(2);
+        } else {
+          s.scale = Math.max(0.2, Math.min(3, +(s.scale + dir * 0.03).toFixed(3)));
+        }
+        apply(d);
+      }
+
+      // --- KEYBOARD nudge ---
+      document.addEventListener('keydown', (e) => {
+        if (!selected) return;
+        // Don't fight the CMD+R etc.
+        if (e.metaKey || e.ctrlKey) return;
+        const s = state.get(selected);
+        const step = e.shiftKey ? 10 : 1;
+        let handled = true;
+        switch (e.key) {
+          case 'ArrowLeft':  s.tx -= step; break;
+          case 'ArrowRight': s.tx += step; break;
+          case 'ArrowUp':    s.ty -= step; break;
+          case 'ArrowDown':  s.ty += step; break;
+          case '[':          s.rotZ = +(s.rotZ - 1).toFixed(2); break;
+          case ']':          s.rotZ = +(s.rotZ + 1).toFixed(2); break;
+          case '-':          s.scale = Math.max(0.2, +(s.scale - 0.02).toFixed(3)); break;
+          case '=':
+          case '+':          s.scale = Math.min(3, +(s.scale + 0.02).toFixed(3)); break;
+          case 'Tab':        select(devices[(devices.indexOf(selected) + (e.shiftKey ? -1 : 1) + devices.length) % devices.length]); break;
+          default: handled = false;
+        }
+        if (handled) { e.preventDefault(); apply(selected); }
+      });
+
+      // --- HUD ---
+      const hud = document.createElement('div');
+      hud.className = 'edit-hud';
+      hud.innerHTML = `
+        <h4>Cover Editor</h4>
+        <div class="hud-list"></div>
+        <button class="hud-copy" type="button">Copy CSS</button>
+        <p class="hud-help">
+          Click a device · Drag to move · Scroll = scale · <kbd>Shift</kbd>+Scroll = rotate<br>
+          Arrows nudge 1 px (<kbd>Shift</kbd>+Arrows = 10 px) · <kbd>[</kbd> <kbd>]</kbd> rotate · <kbd>+</kbd> <kbd>-</kbd> scale · <kbd>Tab</kbd> next device
+        </p>
+      `;
+      document.body.appendChild(hud);
+      const listEl = hud.querySelector('.hud-list');
+
+      function renderHUD() {
+        listEl.innerHTML = devices.map(d => {
+          const s = state.get(d);
+          return `<div class="hud-row${d === selected ? ' is-selected' : ''}"><b>${s.key}</b><span>x:${Math.round(s.tx)} y:${Math.round(s.ty)} s:${s.scale.toFixed(2)} r:${s.rotZ.toFixed(1)}°</span></div>`;
+        }).join('');
+      }
+
+      hud.querySelector('.hud-copy').addEventListener('click', () => {
+        const css = devices.map(d => {
+          const s = state.get(d);
+          return `    .device--${s.key} {\n      transform: translate(${Math.round(s.tx)}px, ${Math.round(s.ty)}px) scale(${s.scale.toFixed(3)}) ${s.baseRot} rotateZ(${s.rotZ.toFixed(2)}deg);\n    }`;
+        }).join('\n');
+        // Wrap with a media block so it's easy to drop straight into
+        // the stylesheet without manually re-nesting.
+        const out = `/* === Cover device positions (edit mode export) === */\n${css}\n`;
+        navigator.clipboard.writeText(out).then(() => {
+          const btn = hud.querySelector('.hud-copy');
+          const orig = btn.textContent;
+          btn.textContent = 'Copied ✓';
+          setTimeout(() => btn.textContent = orig, 1400);
+        });
+        console.log(out);
+      });
+
+      renderHUD();
+    }
   </script>
 </body>
 </html>
