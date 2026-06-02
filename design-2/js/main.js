@@ -6,6 +6,26 @@
   "use strict";
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* ---- Asset base path resolver ----
+     The site lives under /jap-senior-services/design-2/ on GitHub
+     Pages but inner pages sit at /jap-senior-services/design-2/
+     <name>/, so absolute paths like "/assets/lottie/check.json"
+     404 (they hit the wrong host root) and relative paths like
+     "assets/lottie/..." would resolve against the current page,
+     not the design-2 root. Derive the design-2 root from this
+     script's own src (always /design-2/js/main.js) so Lottie loads
+     work from every depth. */
+  var ASSET_BASE = (function () {
+    var scripts = document.getElementsByTagName("script");
+    for (var i = scripts.length - 1; i >= 0; i--) {
+      var src = scripts[i].src || "";
+      if (src.indexOf("/js/main.js") !== -1) {
+        return src.replace(/\/js\/main\.js.*$/, "/");
+      }
+    }
+    return "/";
+  })();
+
   /* ---- Footer year ---- */
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -271,7 +291,7 @@
       node.dataset.loaded = "1";
       var anim = lottie.loadAnimation({
         container: node, renderer: "svg", loop: false,
-        autoplay: !reduceMotion, path: "/assets/lottie/check.json"
+        autoplay: !reduceMotion, path: ASSET_BASE + "assets/lottie/check.json"
       });
       anim.addEventListener("DOMLoaded", function () {
         if (reduceMotion) anim.goToAndStop(anim.totalFrames - 1, true);
@@ -300,7 +320,7 @@
       node.dataset.loaded = "1";
       var anim = lottie.loadAnimation({
         container: node, renderer: "svg", loop: false,
-        autoplay: !reduceMotion, path: "/assets/lottie/check.json"
+        autoplay: !reduceMotion, path: ASSET_BASE + "assets/lottie/check.json"
       });
       anim.addEventListener("DOMLoaded", function () {
         if (reduceMotion) anim.goToAndStop(anim.totalFrames - 1, true);
