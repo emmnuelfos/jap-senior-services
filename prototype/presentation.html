@@ -521,9 +521,18 @@
           .find(k => d.classList.contains('device--' + k));
         state.set(d, { key, tx: 0, ty: 0, scale: 1, rotZ: 0, baseRot: BASE_ROT[key] });
 
-        // Stop the browser's native image-drag on the inner <img>.
+        // Stop the browser's native image-drag on the inner <img>,
+        // but leave it pointer-event-active so mousedown/wheel events
+        // on the picture still bubble up to the .device handler.
+        // (Setting pointer-events:none on the img makes hit-testing
+        // skip the device entirely — events dropped through and the
+        // listeners never fired.)
         const img = d.querySelector('img');
-        if (img) { img.setAttribute('draggable', 'false'); img.style.pointerEvents = 'none'; }
+        if (img) {
+          img.setAttribute('draggable', 'false');
+          img.style.userSelect = 'none';
+          img.style.webkitUserDrag = 'none';
+        }
 
         apply(d);
         d.addEventListener('mousedown', startDrag);
