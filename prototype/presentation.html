@@ -497,22 +497,42 @@
         'mobile-2': 'rotateZ(6deg)',
       };
 
+      // --- HUD (built first so renderHUD() can safely run from the
+      //         very first apply() call inside the forEach below).
+      const hud = document.createElement('div');
+      hud.className = 'edit-hud';
+      hud.innerHTML = `
+        <h4>Cover Editor</h4>
+        <div class="hud-list"></div>
+        <button class="hud-copy" type="button">Copy CSS</button>
+        <p class="hud-help">
+          Click a device &middot; Drag to move &middot; Scroll = scale &middot; <kbd>Shift</kbd>+Scroll = rotate<br>
+          Arrows nudge 1 px (<kbd>Shift</kbd>+Arrows = 10 px) &middot; <kbd>[</kbd> <kbd>]</kbd> rotate &middot; <kbd>+</kbd> <kbd>-</kbd> scale &middot; <kbd>Tab</kbd> next device
+        </p>
+      `;
+      document.body.appendChild(hud);
+      const listEl = hud.querySelector('.hud-list');
+      const copyBtn = hud.querySelector('.hud-copy');
+
+      let selected = null;
+
       devices.forEach(d => {
         const key = ['laptop-1','laptop-2','mobile-1','mobile-2']
           .find(k => d.classList.contains('device--' + k));
         state.set(d, { key, tx: 0, ty: 0, scale: 1, rotZ: 0, baseRot: BASE_ROT[key] });
+
+        // Stop the browser's native image-drag on the inner <img>.
+        const img = d.querySelector('img');
+        if (img) { img.setAttribute('draggable', 'false'); img.style.pointerEvents = 'none'; }
+
         apply(d);
         d.addEventListener('mousedown', startDrag);
         d.addEventListener('wheel', handleWheel, { passive: false });
       });
 
-      // The .device pseudo-children animate in CSS by default. Cancel
-      // their animations and float their opacity to 1 so they are
-      // immediately visible at their resting position.
-      devices.forEach(d => { d.style.opacity = '1'; d.style.animation = 'none'; });
-
-      let selected = devices[0];
+      selected = devices[0];
       selected.classList.add('is-selected');
+      renderHUD();
 
       function apply(d) {
         const s = state.get(d);
@@ -551,7 +571,7 @@
         document.removeEventListener('mouseup', endDrag);
       }
 
-      // --- WHEEL (scale / shift+scale = rotate) ---
+      // --- WHEEL (scale / shift+scroll = rotate) ---
       function handleWheel(e) {
         const d = e.currentTarget;
         select(d);
@@ -569,7 +589,6 @@
       // --- KEYBOARD nudge ---
       document.addEventListener('keydown', (e) => {
         if (!selected) return;
-        // Don't fight the CMD+R etc.
         if (e.metaKey || e.ctrlKey) return;
         const s = state.get(selected);
         const step = e.shiftKey ? 10 : 1;
@@ -590,46 +609,26 @@
         if (handled) { e.preventDefault(); apply(selected); }
       });
 
-      // --- HUD ---
-      const hud = document.createElement('div');
-      hud.className = 'edit-hud';
-      hud.innerHTML = `
-        <h4>Cover Editor</h4>
-        <div class="hud-list"></div>
-        <button class="hud-copy" type="button">Copy CSS</button>
-        <p class="hud-help">
-          Click a device · Drag to move · Scroll = scale · <kbd>Shift</kbd>+Scroll = rotate<br>
-          Arrows nudge 1 px (<kbd>Shift</kbd>+Arrows = 10 px) · <kbd>[</kbd> <kbd>]</kbd> rotate · <kbd>+</kbd> <kbd>-</kbd> scale · <kbd>Tab</kbd> next device
-        </p>
-      `;
-      document.body.appendChild(hud);
-      const listEl = hud.querySelector('.hud-list');
-
       function renderHUD() {
         listEl.innerHTML = devices.map(d => {
           const s = state.get(d);
-          return `<div class="hud-row${d === selected ? ' is-selected' : ''}"><b>${s.key}</b><span>x:${Math.round(s.tx)} y:${Math.round(s.ty)} s:${s.scale.toFixed(2)} r:${s.rotZ.toFixed(1)}°</span></div>`;
+          return `<div class="hud-row${d === selected ? ' is-selected' : ''}"><b>${s.key}</b><span>x:${Math.round(s.tx)} y:${Math.round(s.ty)} s:${s.scale.toFixed(2)} r:${s.rotZ.toFixed(1)}&deg;</span></div>`;
         }).join('');
       }
 
-      hud.querySelector('.hud-copy').addEventListener('click', () => {
+      copyBtn.addEventListener('click', () => {
         const css = devices.map(d => {
           const s = state.get(d);
           return `    .device--${s.key} {\n      transform: translate(${Math.round(s.tx)}px, ${Math.round(s.ty)}px) scale(${s.scale.toFixed(3)}) ${s.baseRot} rotateZ(${s.rotZ.toFixed(2)}deg);\n    }`;
         }).join('\n');
-        // Wrap with a media block so it's easy to drop straight into
-        // the stylesheet without manually re-nesting.
         const out = `/* === Cover device positions (edit mode export) === */\n${css}\n`;
         navigator.clipboard.writeText(out).then(() => {
-          const btn = hud.querySelector('.hud-copy');
-          const orig = btn.textContent;
-          btn.textContent = 'Copied ✓';
-          setTimeout(() => btn.textContent = orig, 1400);
+          const orig = copyBtn.textContent;
+          copyBtn.textContent = 'Copied ✓';
+          setTimeout(() => copyBtn.textContent = orig, 1400);
         });
         console.log(out);
       });
-
-      renderHUD();
     }
   </script>
 </body>
