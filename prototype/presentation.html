@@ -644,6 +644,171 @@
     }
 
     /* ============================================================
+       SLIDE 5 — DESIGNS SHOWCASE
+       Two large preview cards side-by-side, each with a live
+       iframe of the design wrapped in a browser-chrome frame, and
+       a CTA that opens the design in a new tab.
+       ============================================================ */
+    .slide--designs {
+      background: var(--navy);
+      color: #fff;
+      padding-bottom: clamp(90px, 11vh, 130px);
+    }
+    .slide--designs .slide-eyebrow { color: var(--yellow); }
+    .slide--designs .slide-eyebrow::before { background: var(--yellow); }
+    .slide--designs .slide-title { color: #fff; }
+    .slide--designs .slide-title em { color: var(--yellow); }
+    .slide--designs .slide-sub { color: rgba(255,255,255,0.72); }
+
+    .designs-grid {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: clamp(20px, 3vh, 36px) clamp(28px, 4vw, 64px) 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(24px, 3vw, 44px);
+    }
+    .design-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 24px;
+      padding: 18px 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transition: transform 360ms var(--ease), background 360ms var(--ease), border-color 360ms var(--ease);
+      position: relative;
+    }
+    .design-card:hover {
+      transform: translateY(-6px);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .design-card__chrome {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: #0E1A3A;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px -24px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+    /* Browser top bar */
+    .design-card__bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 30px;
+      background: rgba(10,18,42,0.92);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      z-index: 3;
+    }
+    .design-card__dots { display: inline-flex; gap: 5px; }
+    .design-card__dots span {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .design-card__dots span:nth-child(1) { background: #FF5F57; }
+    .design-card__dots span:nth-child(2) { background: #FEBC2E; }
+    .design-card__dots span:nth-child(3) { background: #28C840; }
+    .design-card__url {
+      margin-left: 12px;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.02em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    /* Viewport that holds the scaled-down iframe */
+    .design-card__viewport {
+      position: absolute;
+      inset: 30px 0 0 0;
+      overflow: hidden;
+    }
+    .design-card__viewport iframe {
+      width: 200%;
+      height: 200%;
+      border: 0;
+      transform: scale(0.5);
+      transform-origin: top left;
+      pointer-events: none;
+      background: #fff;
+    }
+    /* Click-overlay so the whole frame opens the design in a new tab */
+    .design-card__link {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      cursor: pointer;
+    }
+    .design-card__body {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 4px 6px 4px;
+    }
+    .design-card__copy { min-width: 0; }
+    .design-card__tag {
+      font-family: var(--f-sans);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin: 0 0 8px;
+    }
+    .design-card__name {
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: clamp(22px, 2vw, 30px);
+      line-height: 1.15;
+      color: #fff;
+      margin: 0 0 6px;
+      letter-spacing: -0.01em;
+    }
+    .design-card__name em { font-style: italic; color: var(--yellow); font-weight: 500; }
+    .design-card__desc {
+      font-family: var(--f-body);
+      font-size: 13px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.7);
+      margin: 0;
+      max-width: 38ch;
+    }
+    .design-card__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--yellow);
+      color: var(--navy);
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-family: var(--f-sans);
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: transform 240ms var(--ease), background 240ms var(--ease);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
+    }
+    .design-card__cta svg { width: 14px; height: 14px; }
+    .design-card__cta:hover { transform: translateY(-2px); background: #FFE600; }
+
+    @media (max-width: 960px) {
+      .designs-grid { grid-template-columns: 1fr; }
+      .design-card__chrome { aspect-ratio: 16 / 11; }
+    }
+
+    /* ============================================================
        SIDE NAV DOTS
        ============================================================ */
     .deck-nav {
@@ -769,7 +934,7 @@
 
       <div class="slide-footer">
         <div>J.A.P. × TaskFlo</div>
-        <div class="right">01 / 04</div>
+        <div class="right">01 / 05</div>
       </div>
     </section>
 
@@ -854,7 +1019,7 @@
 
       <div class="slide-footer">
         <div>J.A.P. × TaskFlo &nbsp;&middot;&nbsp; Brand Colors</div>
-        <div class="right">02 / 04</div>
+        <div class="right">02 / 05</div>
       </div>
     </section>
 
@@ -910,7 +1075,7 @@
 
       <div class="slide-footer">
         <div>J.A.P. × TaskFlo &nbsp;&middot;&nbsp; Typography</div>
-        <div class="right">03 / 04</div>
+        <div class="right">03 / 05</div>
       </div>
     </section>
 
@@ -970,7 +1135,81 @@
 
       <div class="slide-footer">
         <div>J.A.P. × TaskFlo &nbsp;&middot;&nbsp; Site Structure</div>
-        <div class="right">04 / 04</div>
+        <div class="right">04 / 05</div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 5 — DESIGNS SHOWCASE ============ -->
+    <section class="slide slide--designs" id="designs" data-slide="designs" data-dark="1" aria-label="Designs showcase">
+      <a class="corner-mark on-dark" href="#cover">
+        <img src="assets/img/cover/taskflo-logo.png" alt="TaskFlo" />
+      </a>
+
+      <header class="slide-head reveal" data-d="1">
+        <div>
+          <div class="slide-eyebrow">05 · Live Previews</div>
+          <h2 class="slide-title">The <em>Designs</em>.</h2>
+        </div>
+        <p class="slide-sub">Two complete directions, both ready to ship. Click either preview to explore the full live site in a new tab.</p>
+      </header>
+
+      <div class="designs-grid">
+
+        <!-- DESIGN 1 -->
+        <article class="design-card reveal" data-d="1">
+          <div class="design-card__chrome">
+            <div class="design-card__bar">
+              <span class="design-card__dots"><span></span><span></span><span></span></span>
+              <span class="design-card__url">japseniorservicesllc.com</span>
+            </div>
+            <div class="design-card__viewport">
+              <iframe src="../" loading="lazy" title="Design 1 — Warm Editorial Trust preview"></iframe>
+            </div>
+            <a class="design-card__link" href="../" target="_blank" rel="noopener" aria-label="Open Design 1 in a new tab"></a>
+          </div>
+          <div class="design-card__body">
+            <div class="design-card__copy">
+              <p class="design-card__tag">Direction 01</p>
+              <h3 class="design-card__name">Warm <em>Editorial</em> Trust</h3>
+              <p class="design-card__desc">Cream + navy editorial layout with Playfair Display headlines, soft hero photography, and a restrained brand-red accent.</p>
+            </div>
+            <a class="design-card__cta" href="../" target="_blank" rel="noopener">
+              Open Design 1
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- DESIGN 2 -->
+        <article class="design-card reveal" data-d="2">
+          <div class="design-card__chrome">
+            <div class="design-card__bar">
+              <span class="design-card__dots"><span></span><span></span><span></span></span>
+              <span class="design-card__url">japseniorservicesllc.com</span>
+            </div>
+            <div class="design-card__viewport">
+              <iframe src="../../design-2/" loading="lazy" title="Design 2 — Bold Modern preview"></iframe>
+            </div>
+            <a class="design-card__link" href="../../design-2/" target="_blank" rel="noopener" aria-label="Open Design 2 in a new tab"></a>
+          </div>
+          <div class="design-card__body">
+            <div class="design-card__copy">
+              <p class="design-card__tag">Direction 02</p>
+              <h3 class="design-card__name">Bold <em>Modern</em> Care</h3>
+              <p class="design-card__desc">Sand + blob-driven layout with confident blue CTAs and a feature-card storytelling flow. A second voice for the brand.</p>
+            </div>
+            <a class="design-card__cta" href="../../design-2/" target="_blank" rel="noopener">
+              Open Design 2
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="slide-footer">
+        <div>J.A.P. × TaskFlo &nbsp;&middot;&nbsp; Designs</div>
+        <div class="right">05 / 05</div>
       </div>
     </section>
   </div>
@@ -981,6 +1220,7 @@
     <button data-target="colors" aria-label="Brand Colors"><span class="label">Colors</span></button>
     <button data-target="typography" aria-label="Typography"><span class="label">Type</span></button>
     <button data-target="sitemap" aria-label="Site Structure"><span class="label">Site</span></button>
+    <button data-target="designs" aria-label="Designs"><span class="label">Designs</span></button>
   </nav>
 
   <script>
